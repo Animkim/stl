@@ -1,0 +1,37 @@
+{% load compress %}
+
+<!DOCTYPE html>
+<html lang="{{ LANG }}">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <meta name="viewport" content="width=device-width">
+        <meta name="robots" content="noyaca" />
+        <meta name="robots" content="noodp" />
+
+        {% if LANG == 'ru' %}<meta property="og:locale" content="ru_RU" />{% endif %}
+        {% if LANG == 'en' %}<meta property="og:locale" content="en_GB" />{% endif %}
+        <meta name="format-detection" content="telephone=no">
+        {% block meta %}{% endblock %}
+
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+        {% block css_inline %}{% endblock %}
+        {% block jquery %}{% endblock %}
+    </head>
+    <body class="lang-{{ LANG }}{% if is_index %} index{% endif %}">
+        <div class="page">
+            <div id="csrfmiddlewaretoken" data-value="===xCSRFx==="></div>
+            {% block header %}<!--inc header_menu-->{% endblock %}
+            {% block content %}{% endblock %}
+            {% block body_addiional %}{% endblock %}
+        </div>
+
+        {% block allfooter %}{% endblock %}
+        {% block css_bottom %}{% endblock %}
+        {% compress js inline %}{% endcompress %}
+        {% block js %}{% endblock %}
+        {% block media %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,17 @@
+<div>
+    <ul>
+        {% if page.has_previous %}
+            <li><a href="?page=1" rel="1">В начало</a></li>
+        {% endif %}
+
+        {% for page_num in page.paginator.page_range %}
+            <li {% if page_num == page.number %}class="active"{% endif %}>
+                <a href="?{{ path }}&amp;page={{ page_num }}">{{ page_num }}</a>
+            </li>
+        {% endfor %}
+
+        {% if page.has_next %}
+            <li><a rel="{{ page.next_page_number }}" href="?page={{ page.next_page_number }}" title="Следующая страница">Вперед</a></li>
+        {% endif %}
+    </ul>
+</div>
