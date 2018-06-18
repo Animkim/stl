@@ -9,7 +9,8 @@ from django.core.management.utils import get_random_secret_key
 
 
 def patch_settings():
-    path = os.path.join(settings.DJANGO_ROOT, 'settings.py')
+    path = os.path.join(settings.BASE_DIR, 'settings.py')
+    print(path)
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file settings.py'
