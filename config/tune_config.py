@@ -3,12 +3,14 @@
 import os
 import sys
 import argparse
+import django
 
 from django.conf import settings
 from django.core.management.utils import get_random_secret_key
 
 
 def patch_settings():
+    django.setup()
     path = os.path.join(settings.BASE_DIR, 'settings.py')
     print(path)
     if not os.path.exists(path):
