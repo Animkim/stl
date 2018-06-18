@@ -4,13 +4,11 @@ import os
 import sys
 import argparse
 
-from settings import BASE_DIR
 from django.core.management.utils import get_random_secret_key
 
 
 def patch_settings():
-    path = os.path.join(BASE_DIR, 'settings.py')
-    print(path)
+    path = os.path.join(os.path.realpath('.'), 'settings.py')
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file settings.py'
@@ -28,21 +26,22 @@ def patch_settings():
 
 
 def patch_nginx_config(params):
-    if not os.path.exists('nginx.conf'):
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'nginx.conf')
+    if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file nginx.conf'
             'check its availability: {0}'.format('nginx.conf')
         )
         return sys.exit(1)
 
-    with open('nginx.conf', 'r') as nx_original:
+    with open(path, 'r') as nx_original:
         original = nx_original.read()
 
-    original.replace('{server_name}', params.server_name)
-    original.replace('{username}', params.username)
-    original.replace('{project_name}', params.project_name)
+    original = original.replace('{server_name}', params.server_name)
+    original = original.replace('{username}', params.username)
+    original = original.replace('{project_name}', params.project_name)
 
-    with open('nginx.conf', 'w') as nx_new:
+    with open(path, 'w') as nx_new:
         nx_new.write(original)
 
 
