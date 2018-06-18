@@ -8,6 +8,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.2']
 
+SECRET_KEY = ''
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
