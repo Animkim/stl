@@ -1,5 +1,4 @@
 import os
-from settings_secret import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -79,12 +78,3 @@ DATABASES = {
         'NAME': 'mydatabase',
     }
 }
-
-REQUIREMENTS = [
-    'django==2.0.6'
-    'django-compressor'
-    'requests'
-    'pillow'
-]
-
-ACTIVE_LANG = 'ru'
