@@ -23,6 +23,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'urls'
 
 # Internationalization
+ACTIVE_LANG = ''
 
 LANGUAGE_CODE = 'en-us'
 
