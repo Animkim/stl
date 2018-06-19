@@ -9,7 +9,7 @@ from django.core.management.utils import get_random_secret_key
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def patch_settings():
+def patch_settings(params):
     path = os.path.join(BASE_DIR, 'settings.py')
     if not os.path.exists(path):
         sys.stdout.write(
@@ -22,6 +22,7 @@ def patch_settings():
         original = st_original.read()
 
     original = original.replace('SECRET_KEY = \'\'', 'SECRET_KEY = \'{0}\''.format(get_random_secret_key()))
+    original = original.replace('ALLOWED_HOSTS = []', 'ALLOWED_HOSTS = [\'{0}\']'.format(params.server_name))
 
     with open(path, 'w') as st_new:
         st_new.write(original)
@@ -52,7 +53,8 @@ if __name__ == '__main__':
     parser.add_argument(dest='username', action='store')
     parser.add_argument(dest='server_name', action='store')
     parser.add_argument(dest='project_name', action='store')
+    parser.add_argument(dest='project_name', action='store')
     args = parser.parse_args(sys.argv[1:])
 
-    patch_settings()
+    patch_settings(args)
     patch_nginx_config(args)
