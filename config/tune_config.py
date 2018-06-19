@@ -22,7 +22,7 @@ def patch_settings(params):
         original = st_original.read()
 
     original = original.replace('SECRET_KEY = \'\'', 'SECRET_KEY = \'{0}\''.format(get_random_secret_key()))
-    original = original.replace('ALLOWED_HOSTS = []', 'ALLOWED_HOSTS = [\'{0}\']'.format(params.server_name))
+    original = original.replace('ALLOWED_HOSTS = []', 'ALLOWED_HOSTS = [\'{0}\']'.format(params.host_ip))
     original = original.replace('ACTIVE_LANG = \'\'', 'ACTIVE_LANG = \'{0}\''.format(params.lang))
 
     with open(path, 'w') as st_new:
@@ -53,6 +53,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(dest='username', action='store')
     parser.add_argument(dest='server_name', action='store')
+    parser.add_argument(dest='host_ip', action='store')
     parser.add_argument(dest='project_name', action='store')
     parser.add_argument(dest='lang', action='store')
     args = parser.parse_args(sys.argv[1:])
