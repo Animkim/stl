@@ -53,7 +53,6 @@ if __name__ == '__main__':
     parser.add_argument(dest='username', action='store')
     parser.add_argument(dest='server_name', action='store')
     parser.add_argument(dest='project_name', action='store')
-    parser.add_argument(dest='project_name', action='store')
     args = parser.parse_args(sys.argv[1:])
 
     patch_settings(args)
