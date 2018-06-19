@@ -8,7 +8,7 @@ from django.core.management.utils import get_random_secret_key
 
 
 def patch_settings():
-    path = os.path.join(os.path.realpath('.'), 'settings.py')
+    path = os.path.join(os.path.dirname(os.getcwd()), 'settings.py')
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file settings.py'
@@ -26,7 +26,7 @@ def patch_settings():
 
 
 def patch_nginx_config(params):
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'nginx.conf')
+    path = os.path.join(os.getcwd(), 'nginx.conf')
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file nginx.conf'
