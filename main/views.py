@@ -1,9 +1,9 @@
 from django.http import Http404
 from django.shortcuts import render_to_response
 
-from main.ad import AdPage
-from main.models import Ad
-from main.location import LocationPage
+from stl.main.ad import AdPage
+from stl.main.models import Ad
+from stl.main.location import LocationPage
 
 
 def main_page(request):
