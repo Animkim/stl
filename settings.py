@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'compressor',
-    'main',
+    'stl.main',
 ]
 
 DATABASES = {
