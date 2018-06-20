@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import django
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
@@ -14,4 +15,5 @@ if __name__ == "__main__":
         ) from exc
 
     sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+    django.setup()
     execute_from_command_line(sys.argv)
