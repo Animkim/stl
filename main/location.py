@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage
 
-from main.models import Place, Ad
+from stl.main.models import Place, Ad
 
 
 class LocationPage(object):

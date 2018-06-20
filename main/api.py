@@ -1,9 +1,8 @@
-import json
 import requests
 
 from django.conf import settings
 
-from main.models import Ad, AdPhoto, Place, ObjectType
+from stl.main.models import Ad, AdPhoto, Place, ObjectType
 
 
 class TranioApi(object):
