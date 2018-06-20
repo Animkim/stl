@@ -34,7 +34,7 @@ def patch_nginx_config(params):
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file nginx.conf '
-            'check its availability: {0}'.format('nginx.conf')
+            'check its availability: {0}'.format(path)
         )
         return sys.exit(1)
 
@@ -50,6 +50,25 @@ def patch_nginx_config(params):
         nx_new.write(original)
 
 
+def patch_uwsgi_config(params):
+    path = os.path.join(BASE_DIR, 'config', 'uwsgi.ini')
+    if not os.path.exists(path):
+        sys.stdout.write(
+            'Error not found file nginx.conf '
+            'check its availability: uwsgi.ini'.format(path)
+        )
+        return sys.exit(1)
+
+    with open(path, 'r') as uw_original:
+        original = uw_original.read()
+
+    original = original.replace('{username}', params.username)
+    original = original.replace('{project_name}', params.project_name)
+
+    with open(path, 'w') as uw_new:
+        uw_new.write(original)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(dest='username', action='store')
@@ -61,3 +80,4 @@ if __name__ == '__main__':
 
     patch_settings(args)
     patch_nginx_config(args)
+    patch_uwsgi_config(args)
