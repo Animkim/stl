@@ -41,6 +41,7 @@ def patch_nginx_config(params):
     with open(path, 'r') as nx_original:
         original = nx_original.read()
 
+    original = original.replace('{host_ip}', params.host_ip)
     original = original.replace('{server_name}', params.server_name)
     original = original.replace('{username}', params.username)
     original = original.replace('{project_name}', params.project_name)
