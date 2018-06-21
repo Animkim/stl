@@ -6,11 +6,10 @@ import argparse
 
 from django.core.management.utils import get_random_secret_key
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 def patch_settings(params):
-    path = os.path.join(BASE_DIR, 'settings.py')
+    project = '/home/{0}/{1}/'.format(params.username, params.project_name)
+    path = os.path.join(project, 'stl', 'settings.py')
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file settings.py '
@@ -30,7 +29,8 @@ def patch_settings(params):
 
 
 def patch_nginx_config(params):
-    path = os.path.join(BASE_DIR, 'config', 'nginx.conf')
+    project = '/home/{0}/{1}/'.format(params.username, params.project_name)
+    path = os.path.join(project, 'stl/config', 'nginx.conf')
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file nginx.conf '
@@ -46,12 +46,14 @@ def patch_nginx_config(params):
     original = original.replace('{username}', params.username)
     original = original.replace('{project_name}', params.project_name)
 
-    with open(path, 'w') as nx_new:
+    new_path = os.path.join(project, 'config', 'nginx.conf')
+    with open(new_path, 'w') as nx_new:
         nx_new.write(original)
 
 
 def patch_uwsgi_config(params):
-    path = os.path.join(BASE_DIR, 'config', 'uwsgi.ini')
+    project = '/home/{0}/{1}/'.format(params.username, params.project_name)
+    path = os.path.join(project, 'stl/config', 'uwsgi.ini')
     if not os.path.exists(path):
         sys.stdout.write(
             'Error not found file nginx.conf '
@@ -65,7 +67,8 @@ def patch_uwsgi_config(params):
     original = original.replace('{username}', params.username)
     original = original.replace('{project_name}', params.project_name)
 
-    with open(path, 'w') as uw_new:
+    new_path = os.path.join(project, 'config', 'uwsgi.ini')
+    with open(new_path, 'w') as uw_new:
         uw_new.write(original)
 
 
