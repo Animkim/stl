@@ -23,7 +23,7 @@ def patch_settings(params):
     original = original.replace('SECRET_KEY = \'\'', 'SECRET_KEY = \'{0}\''.format(get_random_secret_key()))
     # original = original.replace('ALLOWED_HOSTS = []', 'ALLOWED_HOSTS = [\'{0}\']'.format(params.host_ip))
     original = original.replace('ACTIVE_LANG = \'\'', 'ACTIVE_LANG = \'{0}\''.format(params.lang))
-    original = original.replace('API_TOKEN = \'\'', 'API_TOKEN = \'{0}\''.format(params.token))
+    original = original.replace('TOKEN_API = \'\'', 'TOKEN_API = \'{0}\''.format(params.token))
 
     with open(path, 'w') as st_new:
         st_new.write(original)
