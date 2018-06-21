@@ -7,13 +7,12 @@ from stl.main.models import Ad, AdPhoto, Place, ObjectType
 
 class TranioApi(object):
     @staticmethod
-    def _get_request(url, data=None):
+    def _get_request(url, json_data=None):
         if not url:
             raise ValueError
 
-        # Не забыть изменить метод на post и прекрутить доступ по токену.
-        data = data or {}
-        request = requests.get('https://tranio.iru/api/{0}/'.format(url), json=data, verify=False)
+        data = {'token': settings.TOKEN_API}.update(json_data or {})
+        request = requests.post('https://tranio.iru/api/{0}/'.format(url), json=data, verify=False)
         if request.status_code == 200:
             return request.json()
         return []
@@ -30,7 +29,7 @@ class TranioApi(object):
         ObjectType.objects.all().delete()
 
     def parse_types(self):
-        types = self._get_request('get_types', {'root': 'residential'})
+        types = self._get_request('get_types')
         for data in types:
             data = {k: v for k, v in data.items() if k in ('name', 'slug')}
             ObjectType.objects.create(**data)
@@ -44,11 +43,11 @@ class TranioApi(object):
             ObjectType.objects.filter(slug__in=children).update(parent=parent)
 
     def parse_places(self):
-        places = self._get_request('get_places', {'pk': 46})
+        places = self._get_request('get_places')
         [PlaceCreator(data).process() for data in places]
 
     def parse_ads(self):
-        ads = self._get_request('get_ads', {'place': 46})
+        ads = self._get_request('get_ads')
         for chunk in zip(*[iter(ads)]*100):
             ads = self._get_request('get_ads', {'ads': chunk})
             [AdCreator(data).process() for data in ads]

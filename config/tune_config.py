@@ -23,6 +23,7 @@ def patch_settings(params):
     original = original.replace('SECRET_KEY = \'\'', 'SECRET_KEY = \'{0}\''.format(get_random_secret_key()))
     # original = original.replace('ALLOWED_HOSTS = []', 'ALLOWED_HOSTS = [\'{0}\']'.format(params.host_ip))
     original = original.replace('ACTIVE_LANG = \'\'', 'ACTIVE_LANG = \'{0}\''.format(params.lang))
+    original = original.replace('API_TOKEN = \'\'', 'API_TOKEN = \'{0}\''.format(params.token))
 
     with open(path, 'w') as st_new:
         st_new.write(original)
@@ -42,7 +43,7 @@ def patch_nginx_config(params):
         original = nx_original.read()
 
     original = original.replace('{host_ip}', params.host_ip)
-    original = original.replace('{server_name}', params.server_name)
+    original = original.replace('{server_name}', params.domain)
     original = original.replace('{username}', params.username)
     original = original.replace('{project_name}', params.project_name)
 
@@ -75,9 +76,10 @@ def patch_uwsgi_config(params):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(dest='username', action='store')
-    parser.add_argument(dest='server_name', action='store')
-    parser.add_argument(dest='host_ip', action='store')
     parser.add_argument(dest='project_name', action='store')
+    parser.add_argument(dest='domain', action='store')
+    parser.add_argument(dest='host_ip', action='store')
+    parser.add_argument(dest='token', action='store')
     parser.add_argument(dest='lang', action='store')
     args = parser.parse_args(sys.argv[1:])
 

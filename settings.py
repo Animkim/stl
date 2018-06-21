@@ -9,6 +9,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 SECRET_KEY = ''
+TOKEN_API = ''
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
