@@ -8,7 +8,7 @@ from django.core.management.utils import get_random_secret_key
 
 
 def patch_settings(params):
-    project = '/home/{0}/{1}/'.format(params.username, params.project_name)
+    project = '/home/{0}/stl/'.format(params.username)
     path = os.path.join(project, 'stl', 'settings.py')
     if not os.path.exists(path):
         sys.stdout.write(
@@ -30,7 +30,7 @@ def patch_settings(params):
 
 
 def patch_nginx_config(params):
-    project = '/home/{0}/{1}/'.format(params.username, params.project_name)
+    project = '/home/{0}/stl/'.format(params.username)
     path = os.path.join(project, 'stl/config', 'nginx.conf')
     if not os.path.exists(path):
         sys.stdout.write(
@@ -45,7 +45,6 @@ def patch_nginx_config(params):
     original = original.replace('{host_ip}', params.host_ip)
     original = original.replace('{server_name}', params.domain)
     original = original.replace('{username}', params.username)
-    original = original.replace('{project_name}', params.project_name)
 
     new_path = os.path.join(project, 'config', 'nginx.conf')
     with open(new_path, 'w') as nx_new:
@@ -53,7 +52,7 @@ def patch_nginx_config(params):
 
 
 def patch_uwsgi_config(params):
-    project = '/home/{0}/{1}/'.format(params.username, params.project_name)
+    project = '/home/{0}/stl/'.format(params.username)
     path = os.path.join(project, 'stl/config', 'uwsgi.ini')
     if not os.path.exists(path):
         sys.stdout.write(
@@ -66,7 +65,6 @@ def patch_uwsgi_config(params):
         original = uw_original.read()
 
     original = original.replace('{username}', params.username)
-    original = original.replace('{project_name}', params.project_name)
 
     new_path = os.path.join(project, 'config', 'uwsgi.ini')
     with open(new_path, 'w') as uw_new:
@@ -76,7 +74,6 @@ def patch_uwsgi_config(params):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(dest='username', action='store')
-    parser.add_argument(dest='project_name', action='store')
     parser.add_argument(dest='domain', action='store')
     parser.add_argument(dest='host_ip', action='store')
     parser.add_argument(dest='token', action='store')

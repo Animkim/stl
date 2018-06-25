@@ -13,7 +13,7 @@ class TranioApi(object):
 
         data = {'token': settings.TOKEN_API}
         data.update(json_data or {})
-        request = requests.post('https://tranio.iru/api/{0}/'.format(url), json=data, verify=False)
+        request = requests.post('https://tranio.iru/satellite/api/{0}/'.format(url), json=data, verify=False)
         if request.status_code == 200:
             return request.json()
         return []
