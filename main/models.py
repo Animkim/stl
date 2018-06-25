@@ -11,7 +11,6 @@ class Ad(models.Model):
     price = models.BigIntegerField(db_index=True)
     hide_price = models.BooleanField(u'Цена по запросу', default=False, db_index=True)
 
-    purpose = models.SmallIntegerField(u'Цель', choices=[(1, u'Buy'), (2, u'Rent')])
     place = models.ForeignKey('Place', verbose_name=u'Локация объекта', on_delete=models.PROTECT)
     places = models.ManyToManyField('Place', verbose_name=u'Входит в локации', related_name='ads')
 
