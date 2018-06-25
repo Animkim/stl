@@ -46,8 +46,7 @@ def patch_nginx_config(params):
     original = original.replace('{server_name}', params.domain)
     original = original.replace('{username}', params.username)
 
-    new_path = os.path.join(project, 'config', 'nginx.conf')
-    with open(new_path, 'w') as nx_new:
+    with open(path, 'w') as nx_new:
         nx_new.write(original)
 
 
@@ -66,8 +65,7 @@ def patch_uwsgi_config(params):
 
     original = original.replace('{username}', params.username)
 
-    new_path = os.path.join(project, 'config', 'uwsgi.ini')
-    with open(new_path, 'w') as uw_new:
+    with open(path, 'w') as uw_new:
         uw_new.write(original)
 
 
