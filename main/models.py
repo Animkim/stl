@@ -17,8 +17,6 @@ class Ad(models.Model):
     object_type = models.ForeignKey('ObjectType', on_delete=models.PROTECT)
     rooms_bed = models.IntegerField(u'Спальни', null=True)
     rooms_bath = models.IntegerField(u'Ванные', null=True)
-    feature = models.IntegerField()
-    modifier = models.IntegerField()
 
     def __str__(self):
         return '#{0}'.format(self.pk)

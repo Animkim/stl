@@ -9,5 +9,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ad/<int:pk>/', views.ad_page),
     path('about/<slug:slug>/', views.about_page),
+    path('properties/', views.location_page),
     path('<path:path>/', views.location_page),
 ]

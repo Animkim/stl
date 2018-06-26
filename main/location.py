@@ -1,6 +1,5 @@
 import urllib.parse
 
-from django.db.models import F
 from django.http import Http404
 from django.utils.text import slugify
 from django.core.paginator import Paginator, EmptyPage
@@ -10,20 +9,25 @@ from stl.main.models import Place, Ad
 
 
 class LocationPage(object):
-    def __init__(self, path, page=None):
+    def __init__(self, path, page=None, params=None):
         self.path = path
         self.page = page or 1
+        self.params = params
         self.place = None
 
         self._check_path()
 
     def _check_path(self):
+        if not self.path:
+            return
         try:
             self.place = Place.objects.get(path=self.path)
         except Place.DoesNotExist:
             raise Http404
 
     def get_ads(self):
+        if not self.place:
+            return AdQuery(self.params).query
         return self.place.ads.all()
 
     def get_ads_count(self):
@@ -40,19 +44,17 @@ class LocationPage(object):
 
 class AdQuery(object):
     orders = {
-        'price': ('price_euro', ), '-price': ('-price_euro', ),
+        'price': ('price', ), '-price': ('-price', ),
         'date': ('novelty', ), '-date': ('-novelty', ),
         'profit': ('-profit', ), 'rank': ('-rank', ),
     }
 
-    def __init__(self, params=None, user=None):
+    def __init__(self, params=None):
         self.raw = dict((params or {}).items())
         self.query = Ad.objects.all()
         self.params = {}
         self.options = {}
-        self._init(user)
 
-    def _init(self, user):
         self.raw['order'] = self.raw.get('order') or 'default'
         self.raw['types'] = self.raw.get('types') or self.raw.get('type')
         self.raw['places'] = self.raw.get('places') or self.raw.get('place')
@@ -117,65 +119,6 @@ class AdQuery(object):
         types = set(urllib.parse.unquote_plus(types))
         self.query = self.query.filter(object_type__in=types) if types else self.query
         return types, types
-    #
-    # def _filter_modifier(self, modifier):
-    #     if modifier in ModifierManager.MODIFIERS:
-    #         modifier = ModifierManager.MODIFIERS[modifier]
-    #     if modifier not in ModifierManager.MODIFIERS.values():
-    #         return
-    #     self.query = self.query.extra(where=['modifier & {0} = {0}'.format(modifier.mask)])
-    #     return modifier.slug, modifier
-    #
-    # def _filter_feature(self, feature):
-    #     if feature in FeatureManager.MODIFIERS:
-    #         feature = FeatureManager.MODIFIERS[feature]
-    #     if feature not in FeatureManager.MODIFIERS.values():
-    #         return
-    #     self.query = self.query.extra(where=['feature & {0} = {0}'.format(feature.mask)])
-    #     return feature.slug, feature
-
-    def _filter_options(self, options):
-        options = sorted(set(options))
-        self.query = self.query.filter(options__contains=options)
-        return ''.join(options), options
-
-    # def _filter_distance_sea(self, distance_sea):
-    #     distance_sea = int(distance_sea)
-    #     if not distance_sea:
-    #         return
-    #
-    #     self.query = self.query.filter(advert__distance_sea__lt=distance_sea)
-    #     return str(distance_sea), distance_sea
-
-    def _filter_area_object_from(self, area):
-        area = parse_int(area)
-        if area:
-            self.query = self.query.filter(area_object__gte=area)
-            return str(area), area
-
-    def _filter_area_object_to(self, area):
-        area = parse_int(area)
-        if area:
-            self.query = self.query.filter(area_object__lte=area)
-            return str(area), area
-
-    def _filter_area_land_from(self, area):
-        area = parse_int(area)
-        if area:
-            self.query = self.query.filter(area_land__gte=area)
-            return str(area), area
-
-    def _filter_area_land_to(self, area):
-        area = parse_int(area)
-        if area:
-            self.query = self.query.filter(area_land__lte=area)
-            return str(area), area
-
-    def _filter_rooms_total(self, rooms):
-        rooms = parse_int(rooms)
-        if rooms:
-            self.query = self.query.filter(advert__rooms_total__gte=rooms)
-            return str(rooms), rooms
 
     def _filter_rooms_bath(self, rooms):
         rooms = parse_int(rooms)
@@ -189,18 +132,6 @@ class AdQuery(object):
             self.query = self.query.filter(rooms_bed__gte=rooms)
             return str(rooms), rooms
 
-    def _filter_beds_number(self, beds):
-        beds = parse_int(beds)
-        if beds:
-            self.query = self.query.filter(beds_number__gte=beds)
-            return str(beds), beds
-
-    def _filter_profitability(self, profitability):
-        profitability = parse_int(profitability)
-        if profitability:
-            self.query = self.query.filter(profitability__gte=profitability)
-            return str(profitability), profitability
-
     def _filter_yield_from(self, percent):
         percent = parse_int(percent)
         if percent:
@@ -212,34 +143,3 @@ class AdQuery(object):
         if percent:
             self.query = self.query.filter(profitability__lte=percent)
             return str(percent), percent
-
-    def _filter_absolute_return(self, absolute_return):
-        absolute_return = parse_int(absolute_return)
-        if absolute_return:
-            self.query = self.query.filter(absolute_return__gte=absolute_return)
-            return str(absolute_return), absolute_return
-
-    def _filter_owner_capital(self, owner_capital):
-        owner_capital = parse_int(owner_capital)
-        if owner_capital and self.params.get('purpose') != 'rent':
-            if owner_capital < 100:
-                self.query = self.query.filter(owner_capital__gte=F('selling_price')*owner_capital/100.0)
-            else:
-                self.query = self.query.filter(owner_capital__gte=owner_capital)
-            return str(owner_capital), owner_capital
-
-    def _filter_construction_year_from(self, year):
-        year = parse_int(year)
-        try:
-            self.query = self.query.filter(construction_year__gte=year)
-        except (TypeError, ValueError):
-            return
-        return str(year), year
-
-    def _filter_construction_year_to(self, year):
-        year = parse_int(year)
-        try:
-            self.query = self.query.filter(construction_year__lte=year)
-        except (TypeError, ValueError):
-            return
-        return str(year), year

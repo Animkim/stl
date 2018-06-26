@@ -65,7 +65,6 @@ class AbsCreator(object):
         for field in self.fields:
             extractor = getattr(self, '_%s_extract' % field, None)
             extractor and extractor()
-
         return self.create_model()
 
     def process(self):
@@ -78,17 +77,17 @@ class AbsCreator(object):
 class PlaceCreator(AbsCreator):
     fields = ['name', 'path']
 
+    def create_model(self):
+        fields = [field.attname for field in Place._meta.fields]
+        data = {key: val for key, val in self.data.items() if key in fields}
+        return Place.objects.create(**data)
+
     def _name_extract(self):
         field = 'name_{0}'.format(self.lang)
         self.data['name'] = self.data[field]
 
     def _path_extract(self):
         self.data['path'] = self.data['path'].strip('/')
-
-    def create_model(self):
-        fields = [field.attname for field in Place._meta.fields]
-        data = {key: val for key, val in self.data.items() if key in fields}
-        return Place.objects.create(**data)
 
 
 class AdCreator(AbsCreator):

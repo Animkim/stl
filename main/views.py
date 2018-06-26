@@ -10,9 +10,10 @@ def main_page(request):
     return render_to_response('main.html', {''}, request)
 
 
-def location_page(request, path):
+def location_page(request, path=None):
     page = request.GET.get('page')
-    return render_to_response('location.html', {'rp': LocationPage(path, page)}, request)
+    params = dict(request.GET.items())
+    return render_to_response('location.html', {'rp': LocationPage(path, page, params)}, request)
 
 
 def ad_page(request, pk):
