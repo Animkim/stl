@@ -10,8 +10,8 @@ ALLOWED_HOSTS = ['*']
 
 SECRET_KEY = ''
 TOKEN_API = ''
-LOCATION_URL = ''
-AD_URL = ''
+LOCATION_PATH = ''
+AD_PATH = ''
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
