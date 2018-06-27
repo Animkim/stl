@@ -63,7 +63,7 @@ def patch_uwsgi_config():
     with open(path, 'r') as uw_original:
         original = uw_original.read()
 
-    # original = original.replace('{username}', params.username)
+    original = original.replace('{username}', config.username)
 
     with open(path, 'w') as uw_new:
         uw_new.write(original)
