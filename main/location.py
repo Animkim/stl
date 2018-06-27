@@ -12,7 +12,7 @@ class LocationPage(object):
     def __init__(self, path, page=None, params=None):
         self.path = path
         self.page = page or 1
-        self.params = params
+        self.adq = AdQuery(params)
         self.place = None
 
         self._check_path()
@@ -27,11 +27,16 @@ class LocationPage(object):
 
     def get_ads(self):
         if not self.place:
-            return AdQuery(self.params).query
+            return self.adq.query
         return self.place.ads.all()
 
     def get_ads_count(self):
         return self.get_ads().count()
+
+    def href(self):
+        if not self.place:
+            return self.adq.url()
+        return self.place.path
 
     def paginator(self):
         paginator = Paginator(self.get_ads(), 10)
@@ -70,12 +75,8 @@ class AdQuery(object):
             if isinstance(result, tuple) and len(result) == 2:
                 self.params[key], self.options[key] = result
 
-        # self.options['type'] = len(self.options.get('types', [])) == 1 and self.options['types'][0] or None
-        # self.options['place'] = (self.options.get('places') or [None])[0]
-
     def url(self):
         params = self.params.copy()
-        # params['places'] = ':'.join(filter(lambda p: p != '0', split(params.get('places', ''), ':')))
         params = sorted(filter(lambda i: bool(i[1]), params.items()))
         link = u'%s?%s' % ('/search/', urllib.parse.urlencode(params))
         return link

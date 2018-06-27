@@ -16,10 +16,10 @@ def location_page(request, path=None):
     return render_to_response('location.html', {'rp': LocationPage(path, page, params)}, request)
 
 
-def ad_page(request, pk):
+def ad_page(request, **kwargs):
     try:
-        ad = Ad.objects.get(pk=pk)
-    except Ad.DoesNotExist:
+        ad = Ad.objects.get(**kwargs)
+    except (Ad.DoesNotExist, ValueError):
         raise Http404
     return render_to_response('ad.html', {'ap': AdPage(ad)}, request)
 

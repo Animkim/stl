@@ -1,14 +1,11 @@
 from django.urls import path
-from django.contrib import admin
+from django.conf import settings
 
-from main import views
-admin.autodiscover()
+from stl.main import views
 
 urlpatterns = [
     path('', views.main_page),
-    path('admin/', admin.site.urls),
-    path('ad/<int:pk>/', views.ad_page),
+    path('{ad}'.format(ad=settings.AD_PATH), views.ad_page),
+    path('{location}'.format(location=settings.LOCATION_PATH), views.location_page),
     path('about/<slug:slug>/', views.about_page),
-    path('properties/', views.location_page),
-    path('<path:path>/', views.location_page),
 ]
