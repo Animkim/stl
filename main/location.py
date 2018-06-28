@@ -21,7 +21,7 @@ class LocationPage(object):
         if not self.path:
             return
         try:
-            self.place = Place.objects.get(path=self.path)
+            self.place = Place.objects.get(path__startswith=self.path)
         except Place.DoesNotExist:
             raise Http404
 
