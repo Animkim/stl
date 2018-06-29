@@ -27,6 +27,7 @@ class TranioApi(object):
     @staticmethod
     def clear_models():
         Ad.objects.all().delete()
+        AdPhoto.objects.all().delete()
         Place.objects.all().delete()
         ObjectType.objects.all().delete()
 
