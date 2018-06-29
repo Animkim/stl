@@ -98,38 +98,30 @@ class AdCreator(AbsCreator):
     def process(self):
         ad = self._process()
         if ad:
-            places = Place.objects.filter(pk__in=self.data.get('places'))
+            photos = [AdPhoto.objects.create(photo=photo) for photo in self.data.get('photos', [])]
+            places = Place.objects.filter(pk__in=self.data.get('places', []))
             ad.places.set(places)
+            ad.photos.set(photos)
 
     def create_model(self):
         fields = [field.attname for field in Ad._meta.fields]
         data = {key: val for key, val in self.data.items() if key in fields}
-        if not data['object_type_id']:
+        try:
+            return Ad.objects.create(**data)
+        except (TypeError, ValueError):
             return None
-        with open('test.log', 'a') as f:
-            f.write(str(self.data.get('photos', [])) + ':%s\n' % self.data['origin_id'])
-
-        photos = [AdPhoto.objects.create(photo=photo) for photo in self.data.get('photos', [])]
-        ad = Ad.objects.create(**data)
-        ad.photos.set(photos)
-        return Ad.objects.create(**data)
 
     def _id_extract(self):
         self.data['origin_id'] = self.data.pop('id')
 
     def _object_type_extract(self):
         try:
-            ot = ObjectType.objects.get(slug=self.data['object_type']).pk
+            self.data['object_type_id'] = ObjectType.objects.get(slug=self.data['object_type']).pk
         except (ObjectType.DoesNotExist, ValueError):
-            ot = None
-
-        self.data['object_type_id'] = ot
+            pass
 
     def _price_extract(self):
         self.data['price'] = self.data['price_euro']
-
-    def _photo_extract(self):
-        self.data['photo_id'] = None
 
     def _title_extract(self):
         field = 'desc_title_{0}'.format(self.lang)
