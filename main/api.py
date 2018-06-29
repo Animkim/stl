@@ -103,7 +103,11 @@ class AdCreator(AbsCreator):
         fields = [field.attname for field in Ad._meta.fields]
         data = {key: val for key, val in self.data.items() if key in fields}
         if not data['object_type_id']:
-            return
+            return None
+
+        photos = [AdPhoto.objects.create(photo) for photo in data.get('photos', [])]
+        ad = Ad.objects.create(**data)
+        ad.photos.set(photos)
         return Ad.objects.create(**data)
 
     def _id_extract(self):

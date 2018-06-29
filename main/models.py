@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Ad(models.Model):
-    photo = models.ForeignKey('AdPhoto', null=True, on_delete=models.PROTECT)
+    photos = models.ManyToManyField('main.AdPhoto', on_delete=models.PROTECT)
     title = models.TextField(u'Заголовок объявления')
     traits = models.TextField(u'Характеристики объявления')
 
