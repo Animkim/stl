@@ -24,7 +24,8 @@ class TranioApi(object):
         self.parse_places()
         self.parse_ads()
 
-    def clear_models(self):
+    @staticmethod
+    def clear_models():
         Ad.objects.all().delete()
         Place.objects.all().delete()
         ObjectType.objects.all().delete()
@@ -105,7 +106,7 @@ class AdCreator(AbsCreator):
         if not data['object_type_id']:
             return None
 
-        photos = [AdPhoto.objects.create(photo) for photo in data.get('photos', [])]
+        photos = [AdPhoto.objects.create(photo=photo) for photo in data.get('photos', [])]
         ad = Ad.objects.create(**data)
         ad.photos.set(photos)
         return Ad.objects.create(**data)
