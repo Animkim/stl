@@ -107,8 +107,8 @@ class AdCreator(AbsCreator):
             return None
         with open('test.log', 'w') as f:
             f.write(str(data.get('photos', [])))
-            
-        photos = [AdPhoto.objects.create(photo=photo) for photo in data.get('photos', [])]
+
+        photos = [AdPhoto.objects.create(photo=photo) for photo in self.data.get('photos', [])]
         ad = Ad.objects.create(**data)
         ad.photos.set(photos)
         return Ad.objects.create(**data)
