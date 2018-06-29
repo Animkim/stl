@@ -107,7 +107,7 @@ class AdCreator(AbsCreator):
         if not data['object_type_id']:
             return None
         with open('test.log', 'a') as f:
-            f.write(str(data.get('photos', [])) + ':%s\n' % self.data['id'])
+            f.write(str(self.data.get('photos', [])) + ':%s\n' % self.data['id'])
 
         photos = [AdPhoto.objects.create(photo=photo) for photo in self.data.get('photos', [])]
         ad = Ad.objects.create(**data)
