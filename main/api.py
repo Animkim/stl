@@ -106,10 +106,12 @@ class AdCreator(AbsCreator):
     def create_model(self):
         fields = [field.attname for field in Ad._meta.fields]
         data = {key: val for key, val in self.data.items() if key in fields}
-        try:
-            return Ad.objects.create(**data)
-        except (TypeError, ValueError):
+        if not data.get('object_type_id'):
+            with open('test.log', 'a') as f:
+                f.write(self.data['origin_id'] + ':%s\n' % self.data['object_type'])
+
             return None
+        return Ad.objects.create(**data)
 
     def _id_extract(self):
         self.data['origin_id'] = self.data.pop('id')
