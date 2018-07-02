@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Ad(models.Model):
@@ -20,6 +21,10 @@ class Ad(models.Model):
 
     def __str__(self):
         return '#{0}'.format(self.pk)
+
+    @property
+    def link(self):
+        return reverse('ad', kwargs={'pk': self.pk})
 
 
 class Place(models.Model):
