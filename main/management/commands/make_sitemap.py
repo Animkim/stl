@@ -1,7 +1,6 @@
 import os
 import datetime
 
-
 from lxml import etree
 
 from django.conf import settings
@@ -22,7 +21,7 @@ class LocationURLs(object):
     @staticmethod
     def make():
         urls = []
-        places = Place.objects.filter(ads_count__gt=0).order_by('-wordstat')
+        places = Place.objects.order_by('-wordstat')
         for place in places.iterator():
             urls.append('/%s/' % place.path)
         return [{'loc': SITE_NAME + url} for url in filter(bool, sorted(set(urls)))]
