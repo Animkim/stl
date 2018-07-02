@@ -1,0 +1,29 @@
+{% extends "misc_page.html" %}
+{% block content %}
+    <div class="ap" data-pk="{{ ap.ad.pk }}">
+        {% include "ad/inc-ad-crumbs.html" %}
+        {% include "ad/inc-ad-photos.html" %}
+        <div class="wrapper">
+            <main>
+                <h1>{{ ap.ad.title }}</h1>
+                <div class="ap-prices">{{ ap.ad.price }}</div>
+                <div class="ap-attributes">{% include "ad/inc-ad-attr.html" %}</div>
+                <div class="ap-description">{{ ap.desc_block }}</div>
+                {% if ap.narrative_special %}<div class="ap-narrative">{{ ap.narrative_special }}</div>{% endif %}
+            </main>
+{#            <aside class="ap-lead-aside">#}
+{#                {% with name='apLeadAside' mod='lf-ap' dir='reverse' lead=ap.lead_aside purpose=ap.lead_form_purpose need_notice=ap.notice lead_form_type=ap.lead_form_type %}#}
+{#                    {% include "main/lead-form/lead-form-aside.html" %}#}
+{#                {% endwith %}#}
+{#            </aside>#}
+        </div>
+        <i class="line"></i>
+        <!--noindex-->
+{#            {% include "main/lead-form/lead-form.html" with name='apLead' mod='ap-lead' lead=ap.lead need_notice=ap.notice lead_form_type=ap.lead_form_type %}#}
+        <!--noindex-->
+        <div class="popup-mc" data-pk="{{ ap.advert.pk }}"></div>
+        <div class="popup-lp">{% include "ad/inc-ad-lead_popup.html" with lead=ap.lead_aside %}</div>
+        <!--/noindex-->
+        <div class="popup-gallery">{% include "ad/inc-ad-gallery_popup.html" with photos=ap.photos.all %}</div>
+    </div>
+{% endblock %}

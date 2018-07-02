@@ -1,9 +1,10 @@
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render_to_response
 
 from stl.main.ad import AdPage
 from stl.main.models import Ad
 from stl.main.location import LocationPage
+from stl.robots import RobotsCompiler
 
 
 def main_page(request):
@@ -21,12 +22,8 @@ def ad_page(request, **kwargs):
         ad = Ad.objects.get(**kwargs)
     except (Ad.DoesNotExist, ValueError):
         raise Http404
-    return render_to_response('ad.html', {'ap': AdPage(ad)}, request)
+    return render_to_response('ad/ad.html', {'ap': AdPage(ad)}, request)
 
 
-def about_page(request, slug):
-    template = {'about': 'about.html'}.get(slug)
-    if not template:
-        raise Http404
-
-    return render_to_response('about.html', {}, request)
+def robots(request):
+    return HttpResponse(RobotsCompiler().compile(request.get_host()), content_type='text/plain')

@@ -2,6 +2,9 @@ from django.db import models
 
 
 class Ad(models.Model):
+    created_at = models.DateTimeField()
+    changed_at = models.DateTimeField()
+
     photos = models.ManyToManyField('main.AdPhoto')
     title = models.TextField(u'Заголовок объявления')
     traits = models.TextField(u'Характеристики объявления')
@@ -23,6 +26,8 @@ class Ad(models.Model):
 
 
 class Place(models.Model):
+    wordstat = models.IntegerField(u'Wordstat', default=0)
+
     name = models.TextField(u'Топоним в именительном падеже')
     slug = models.TextField(u'Слаг, не уникален')
     path = models.TextField(u'Активный url')

@@ -24,6 +24,7 @@ def patch_settings():
     # original = original.replace('ALLOWED_HOSTS = []', 'ALLOWED_HOSTS = [\'{0}\']'.format(params.host_ip))
     original = original.replace('ACTIVE_LANG = \'\'', 'ACTIVE_LANG = \'{0}\''.format(config.lang))
     original = original.replace('TOKEN_API = \'\'', 'TOKEN_API = \'{0}\''.format(config.token))
+    original = original.replace('DOMAIN = \'\'', 'DOMAIN = \'{0}\''.format(config.domain))
     original = original.replace('LOCATION_PATH = \'\'', 'LOCATION_PATH = \'{0}\''.format(config.location_path))
     original = original.replace('AD_PATH = \'\'', 'AD_PATH = \'{0}\''.format(config.ad_path))
 

@@ -10,6 +10,7 @@ ALLOWED_HOSTS = ['*']
 
 SECRET_KEY = ''
 TOKEN_API = ''
+DOMAIN = ''
 LOCATION_PATH = ''
 AD_PATH = ''
 
@@ -21,6 +22,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'urls'
@@ -56,6 +58,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'stl.context.context',
             ],
             'loaders': (
                 'django.template.loaders.filesystem.Loader',
@@ -73,6 +76,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
     'compressor',
     'stl.main',
 ]
