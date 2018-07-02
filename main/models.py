@@ -2,9 +2,6 @@ from django.db import models
 
 
 class Ad(models.Model):
-    created_at = models.DateTimeField()
-    changed_at = models.DateTimeField()
-
     photos = models.ManyToManyField('main.AdPhoto')
     title = models.TextField(u'Заголовок объявления')
     traits = models.TextField(u'Характеристики объявления')

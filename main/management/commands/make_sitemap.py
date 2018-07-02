@@ -33,7 +33,6 @@ class AdURLs(object):
     def make():
         data = []
         ads = Ad.objects.all()
-        ads = ads.order_by('-changed_at')
         for ad in ads.select_related('place').iterator():
             loc = '{}{}'.format(SITE_NAME, ad.link)
             data.append({'loc': loc, 'lastmod': ad.changed_at.strftime(LASTMOD_FORMAT), 'priority': '0.9'})
