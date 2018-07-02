@@ -1,5 +1,7 @@
 import requests
 
+from itertools import zip_longest
+
 from django.conf import settings
 
 from stl.main.models import Ad, AdPhoto, Place, ObjectType
@@ -51,7 +53,7 @@ class TranioApi(object):
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
-        for chunk in zip(*[iter(ads)]*100):
+        for chunk in zip_longest(*[iter(ads)]*100):
             ads = self._get_request('get_ads', {'ads': chunk})
             [AdCreator(data).process() for data in ads]
 
@@ -93,7 +95,7 @@ class PlaceCreator(AbsCreator):
 
 
 class AdCreator(AbsCreator):
-    fields = ['id', 'object_type', 'price', 'photo', 'title']
+    fields = ['id', 'object_type', 'price', 'title']
 
     def process(self):
         ad = self._process()
@@ -107,9 +109,6 @@ class AdCreator(AbsCreator):
         fields = [field.attname for field in Ad._meta.fields]
         data = {key: val for key, val in self.data.items() if key in fields}
         if not data.get('object_type_id'):
-            with open('test.log', 'a') as f:
-                f.write(self.data['origin_id'] + ':%s\n' % self.data['object_type'])
-
             return None
         return Ad.objects.create(**data)
 
