@@ -93,7 +93,7 @@ class XMLFormer(object):
 class Command(BaseCommand):
     def handle(self, **options):
         builders = {'locations': LocationURLs, 'adt': AdURLs}
-        self.make('https://tranio.ru', 'sitemaps/ru', builders)
+        self.make('https://%s' % settings.DOMAIN, 'sitemaps', builders)
 
     def make(self, site_name, folder, builders):
         global SITE_NAME
