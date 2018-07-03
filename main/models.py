@@ -24,8 +24,7 @@ class Ad(models.Model):
     def __str__(self):
         return '#{0}'.format(self.pk)
 
-    @property
-    def link(self):
+    def get_absolute_url(self):
         return reverse('ad', kwargs={'pk': self.pk})
 
 
