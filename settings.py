@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.sitemaps'
     'django.contrib.flatpages',
     'compressor',
     'stl.main',
