@@ -95,7 +95,7 @@ class PlaceCreator(AbsCreator):
 
 
 class AdCreator(AbsCreator):
-    fields = ['id', 'object_type', 'price', 'title']
+    fields = ['id', 'object_type', 'price', 'title', 'changed_at', 'rank']
 
     def process(self):
         ad = self._process()
@@ -127,3 +127,9 @@ class AdCreator(AbsCreator):
     def _title_extract(self):
         field = 'desc_title_{0}'.format(self.lang)
         self.data['title'] = self.data[field]
+
+    def _changed_at_extract(self):
+        self.data['changed_at'] = self.data['changed_at']
+
+    def _rank_extract(self):
+        self.data['rank'] = self.data['rank_kludge']
