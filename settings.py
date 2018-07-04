@@ -13,6 +13,7 @@ TOKEN_API = ''
 DOMAIN = ''
 LOCATION_PATH = ''
 AD_PATH = ''
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -59,12 +60,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'stl.context.context',
+                'stl.context_processors.context',
             ],
-            # 'loaders': (
-            #     'django.template.loaders.filesystem.Loader',
-            #     'django.template.loaders.app_directories.Loader',
-            # ),
         },
     },
 ]
