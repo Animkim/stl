@@ -11,6 +11,8 @@ from stl.sitemap import AdSitemap, PlaceSitemap
 class Command(BaseCommand):
     def handle(self, **options):
         sitemaps = {'ad': AdSitemap, 'place': PlaceSitemap}
-        xml = sitemap(RequestFactory(), sitemaps)
+        factory = RequestFactory()
+        request = factory.get('/')
+        xml = sitemap(request, sitemaps)
         with open(os.path.join(settings.MEDIA_ROOT, 'sitemap', 'sitemap.xml'), 'w') as fl:
             fl.write(xml.content)
