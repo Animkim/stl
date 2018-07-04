@@ -38,6 +38,9 @@ class Place(models.Model):
     def __str__(self):
         return self.path
 
+    def get_absolute_url(self):
+        return reverse('place', kwargs={'path': self.path})
+
 
 class AdPhoto(models.Model):
     photo = models.FileField(upload_to='adt/')
