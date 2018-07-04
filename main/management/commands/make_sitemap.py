@@ -15,4 +15,4 @@ class Command(BaseCommand):
         request = factory.get('/')
         xml = sitemap(request, sitemaps)
         with open(os.path.join(settings.MEDIA_ROOT, 'sitemap', 'sitemap.xml'), 'w') as fl:
-            fl.write(xml.content)
+            fl.write(xml.rendered_content)
