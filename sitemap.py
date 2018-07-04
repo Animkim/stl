@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.contrib.sites.models import Site
-from django.conf import settings
 
 from stl.main.models import Ad, Place
 
