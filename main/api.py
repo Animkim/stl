@@ -116,7 +116,7 @@ class AbsCleaner(object):
     def __init__(self, data):
         self.data = data
         self.clean_data = {}
-        self.fields = [field.attname for field in self.model._meta.fields()]
+        self.fields = [field.attname for field in self.model._meta.fields]
 
     def clear(self):
         self._multilang_fields()
