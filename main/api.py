@@ -60,7 +60,8 @@ class TranioApi(object):
 
 class AdCreator(object):
     def __init__(self, data):
-        self.data = AdCleaner(data).clear()
+        self.data = data
+        self.clean_data = AdCleaner(self.data).clear()
 
     def process(self):
         for method in dir(self):
@@ -69,9 +70,9 @@ class AdCreator(object):
             extractor = getattr(self, method, None)
             extractor and extractor()
 
-        if not self.data.get('object_type_id'):
+        if not self.clean_data.get('object_type_id'):
             return None
-        ad = Ad.objects.create(**self.data)
+        ad = Ad.objects.create(**self.clean_data)
         ad.photos.set(self.get_photos())
         ad.places.set(Place.objects.filter(pk__in=self.data.get('places', [])))
         return ad
@@ -86,14 +87,15 @@ class AdCreator(object):
 
     def _object_type_extract(self):
         try:
-            self.data['object_type_id'] = ObjectType.objects.get(slug=self.data['object_type']).pk
+            self.clean_data['object_type_id'] = ObjectType.objects.get(slug=self.data['object_type']).pk
         except (ObjectType.DoesNotExist, ValueError):
             pass
 
 
 class PlaceCreator(object):
     def __init__(self, data):
-        self.data = PlaceCleaner(data).clear()
+        self.data = data
+        self.clean_data = PlaceCleaner(self.data).clear()
 
     def process(self):
         for method in dir(self):
@@ -101,10 +103,10 @@ class PlaceCreator(object):
                 continue
             extractor = getattr(self, method, None)
             extractor and extractor()
-        return Place.objects.create(**self.data)
+        return Place.objects.create(**self.clean_data)
 
     def _path_extract(self):
-        self.data['path'] = self.data['path'].strip('/')
+        self.clean_data['path'] = self.data['path'].strip('/')
 
 
 class AbsCleaner(object):
