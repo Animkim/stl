@@ -58,62 +58,31 @@ class TranioApi(object):
             [AdCreator(data).process() for data in ads]
 
 
-class AbsCreator(object):
-    lang = settings.ACTIVE_LANG
-
+class AdCreator(object):
     def __init__(self, data):
-        self.data = data
-        self.fields = getattr(self, 'fields', [])
+        self.data = AdCleaner(data).clear()
 
-    def _process(self):
-        for field in self.fields:
-            extractor = getattr(self, '_%s_extract' % field, None)
+    def process(self):
+        for method in dir(self):
+            if not method.endswith('_extract'):
+                continue
+            extractor = getattr(self, method, None)
             extractor and extractor()
-        return self.create_model()
 
-    def process(self):
-        self._process()
-
-    def create_model(self):
-        raise Exception
-
-
-class PlaceCreator(AbsCreator):
-    fields = ['name', 'path']
-
-    def create_model(self):
-        fields = [field.attname for field in Place._meta.fields]
-        data = {key: val for key, val in self.data.items() if key in fields}
-        return Place.objects.create(**data)
-
-    def _name_extract(self):
-        field = 'name_{0}'.format(self.lang)
-        self.data['name'] = self.data[field]
-
-    def _path_extract(self):
-        self.data['path'] = self.data['path'].strip('/')
-
-
-class AdCreator(AbsCreator):
-    fields = ['id', 'object_type', 'price', 'title', 'changed_at', 'rank']
-
-    def process(self):
-        ad = self._process()
-        if ad:
-            photos = [AdPhoto.objects.create(photo=photo) for photo in self.data.get('photos', [])]
-            places = Place.objects.filter(pk__in=self.data.get('places', []))
-            ad.places.set(places)
-            ad.photos.set(photos)
-
-    def create_model(self):
-        fields = [field.attname for field in Ad._meta.fields]
-        data = {key: val for key, val in self.data.items() if key in fields}
-        if not data.get('object_type_id'):
+        if not self.data.get('object_type_id'):
             return None
-        return Ad.objects.create(**data)
+        ad = Ad.objects.create(**self.data)
+        ad.photos.set(self.get_photos())
+        ad.places.set(Place.objects.filter(pk__in=self.data.get('places', [])))
+        return ad
 
-    def _id_extract(self):
-        self.data['origin_id'] = self.data.pop('id')
+    def get_photos(self):
+        existing_photos = AdPhoto.objects.filter(photo__in=self.data.get('photos', [])).values_list('photo', flat=True)
+        for photo in self.data.get('photos', []):
+            if photo in existing_photos:
+                continue
+            AdPhoto.objects.create(photo=photo)
+        return AdPhoto.objects.filter(photo__in=self.data.get('photos', []))
 
     def _object_type_extract(self):
         try:
@@ -121,15 +90,62 @@ class AdCreator(AbsCreator):
         except (ObjectType.DoesNotExist, ValueError):
             pass
 
-    def _price_extract(self):
-        self.data['price'] = self.data['price_euro']
 
-    def _title_extract(self):
-        field = 'desc_title_{0}'.format(self.lang)
-        self.data['title'] = self.data[field]
+class PlaceCreator(object):
+    def __init__(self, data):
+        self.data = PlaceCleaner(data).clear()
 
-    def _changed_at_extract(self):
-        self.data['changed_at'] = self.data['changed_at']
+    def process(self):
+        for method in dir(self):
+            if not method.endswith('_extract'):
+                continue
+            extractor = getattr(self, method, None)
+            extractor and extractor()
+        return Place.objects.create(**self.data)
 
-    def _rank_extract(self):
-        self.data['rank'] = self.data['rank_kludge']
+    def _path_extract(self):
+        self.data['path'] = self.data['path'].strip('/')
+
+
+class AbsCleaner(object):
+    drop_list = []
+    multilang = []
+    map_fields = []
+    model = None
+
+    def __init__(self, data):
+        self.data = data
+        self.clean_data = {}
+        self.fields = [field.attname for field in self.model._meta.fields()]
+
+    def clear(self):
+        self._multilang_fields()
+        self._mapping_fields()
+        self._clear_data()
+        return self.clean_data
+
+    def _multilang_fields(self):
+        for field in self.multilang:
+            original_field = '{field}_{lang}'.format(field=field, lang=settings.ACTIVE_LANG)
+            self.data[field] = self.data[original_field]
+
+    def _mapping_fields(self):
+        for field, new_field in self.map_fields:
+            self.data[new_field] = self.data[field]
+
+    def _clear_data(self):
+        for field in self.fields:
+            if field not in self.drop_list:
+                self.clean_data[field] = self.data.get(field)
+
+
+class AdCleaner(AbsCleaner):
+    drop_list = ['id']
+    multilang = ['desc_title']
+    map_fields = [('desc_title', 'title'), ('rank_kludge', 'rank'), ('price_euro', 'price')]
+    model = Ad
+
+
+class PlaceCleaner(AbsCleaner):
+    multilang = ['name']
+    model = Place
