@@ -73,6 +73,8 @@ class AdCreator(object):
 
         if not self.data.get('object_type_id'):
             return None
+        
+        self.data.update(self.raw_data['satellite'])
         ad = Ad.objects.create(**self.data)
         ad.photos.set(self.get_photos())
         ad.places.set(Place.objects.filter(pk__in=self.raw_data.get('places', [])))
