@@ -148,11 +148,10 @@ class AbsCleaner(object):
 class AdCleaner(AbsCleaner):
     drop_list = ['id']
     multilang = ['desc_title']
-    map_fields = [('desc_title', 'title'), ('rank_kludge', 'rank'), ('price_euro', 'price')]
+    map_fields = [('desc_title', 'title'), ('rank_kludge', 'rank'), ('price_euro', 'price'), ('place', 'place_id')]
     model = Ad
 
 
 class PlaceCleaner(AbsCleaner):
-    drop_list = ['places']
     multilang = ['name']
     model = Place
