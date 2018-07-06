@@ -154,4 +154,5 @@ class AdCleaner(AbsCleaner):
 
 class PlaceCleaner(AbsCleaner):
     multilang = ['name']
+    map_fields = [('pk', 'id')]
     model = Place
