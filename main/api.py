@@ -153,5 +153,6 @@ class AdCleaner(AbsCleaner):
 
 
 class PlaceCleaner(AbsCleaner):
+    drop_list = ['places']
     multilang = ['name']
     model = Place
