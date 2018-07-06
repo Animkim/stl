@@ -36,7 +36,7 @@ class TranioApi(object):
     def parse_types(self):
         types = self._get_request('get_types')
         for data in types:
-            data = {k: v for k, v in data.items() if k in ('name', 'slug')}
+            data = {k: v for k, v in data.items() if k in ('name', 'slug', 'letter_id')}
             ObjectType.objects.create(**data)
 
         for data in types:
@@ -49,19 +49,20 @@ class TranioApi(object):
 
     def parse_places(self):
         places = self._get_request('get_places')
+        [data.update(data.pop('fields')) for data in places]
         [PlaceCreator(data).process() for data in places]
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
         for chunk in zip_longest(*[iter(ads)]*100):
             ads = self._get_request('get_ads', {'ads': chunk})
-            [AdCreator(data).process() for data in ads]
+            [AdCreator(data['fields']).process() for data in ads]
 
 
 class AdCreator(object):
     def __init__(self, data):
-        self.data = data
-        self.clean_data = AdCleaner(self.data).clear()
+        self.raw_data = data
+        self.data = AdCleaner(self.raw_data).clear()
 
     def process(self):
         for method in dir(self):
@@ -70,24 +71,25 @@ class AdCreator(object):
             extractor = getattr(self, method, None)
             extractor and extractor()
 
-        if not self.clean_data.get('object_type_id'):
+        if not self.data.get('object_type_id'):
             return None
-        ad = Ad.objects.create(**self.clean_data)
+        ad = Ad.objects.create(**self.data)
         ad.photos.set(self.get_photos())
-        ad.places.set(Place.objects.filter(pk__in=self.data.get('places', [])))
+        ad.places.set(Place.objects.filter(pk__in=self.raw_data.get('places', [])))
         return ad
 
     def get_photos(self):
-        existing_photos = AdPhoto.objects.filter(photo__in=self.data.get('photos', [])).values_list('photo', flat=True)
-        for photo in self.data.get('photos', []):
+        photos = self.raw_data.get('photos', [])
+        existing_photos = AdPhoto.objects.filter(photo__in=photos).values_list('photo', flat=True)
+        for photo in photos:
             if photo in existing_photos:
                 continue
             AdPhoto.objects.create(photo=photo)
-        return AdPhoto.objects.filter(photo__in=self.data.get('photos', []))
+        return AdPhoto.objects.filter(photo__in=photos)
 
     def _object_type_extract(self):
         try:
-            self.clean_data['object_type_id'] = ObjectType.objects.get(slug=self.data['object_type']).pk
+            self.data['object_type_id'] = ObjectType.objects.get(letter_id=self.raw_data['object_type']).pk
         except (ObjectType.DoesNotExist, ValueError):
             pass
 

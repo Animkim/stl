@@ -49,6 +49,7 @@ class AdPhoto(models.Model):
 class ObjectType(models.Model):
     name = models.TextField(u'Топоним в именительном падеже')
     slug = models.TextField()
+    letter_id = models.TextField()
     parent = models.ForeignKey('self', related_name='children', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
