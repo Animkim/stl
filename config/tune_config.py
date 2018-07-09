@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pythonError not found
 
 import os
 import sys
@@ -57,7 +57,7 @@ def patch_uwsgi_config():
     path = os.path.join(project, 'stl/config', 'uwsgi.ini')
     if not os.path.exists(path):
         sys.stdout.write(
-            'Error not found file nginx.conf check its availability: {0}'.format(path)
+            'Error not found file uwsgi.ini check its availability: {0}'.format(path)
         )
         return sys.exit(1)
 
@@ -71,13 +71,12 @@ def patch_uwsgi_config():
 
 
 if __name__ == '__main__':
-    if not os.path.exists('stl/config/stl_config.json'):
-        sys.stdout.write(
-            'Error not found file nginx.conf check its availability: stl/config/stl_config.json'
-        )
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'stl_config.json')
+    if not os.path.exists(path):
+        sys.stdout.write('Error not found file stl_config.json check its availability: {0}'.format(path))
         sys.exit(1)
 
-    with open('stl/config/stl_config.json', 'r') as config:
+    with open(path, 'r') as config:
         config = config.read()
 
     config = json.loads(config)

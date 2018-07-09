@@ -8,5 +8,7 @@ from stl.robots import RobotsCompiler
 
 class Command(BaseCommand):
     def handle(self, **options):
-        with open(os.path.join(settings.MEDIA_ROOT, 'robots', 'robots.txt'), 'w') as fl:
-            fl.write(RobotsCompiler().compile(settings.DOMAIN))
+        robots = os.path.join(settings.MEDIA_ROOT, 'robots', 'robots.txt')
+        if not os.path.isfile(robots):
+            with open(robots, 'w') as fl:
+                fl.write(RobotsCompiler().compile(settings.DOMAIN))
