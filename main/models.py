@@ -12,7 +12,7 @@ class Ad(models.Model):
     photos = models.ManyToManyField('main.AdPhoto')
 
     # sorting
-    rank = models.IntegerField(db_index=True)
+    rank_kludge = models.IntegerField(db_index=True)
     price = models.BigIntegerField(db_index=True)
     hide_price = models.BooleanField(u'Цена по запросу', default=False, db_index=True)
 

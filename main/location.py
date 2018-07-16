@@ -51,7 +51,7 @@ class AdQuery(object):
     orders = {
         'price': ('price', ), '-price': ('-price', ),
         'date': ('novelty', ), '-date': ('-novelty', ),
-        'profit': ('-profit', ), 'rank': ('-rank', ),
+        'profit': ('-profit', ), 'rank': ('-rank_kludge', ),
     }
 
     def __init__(self, params=None):
@@ -88,7 +88,7 @@ class AdQuery(object):
         if order in self.orders:
             self.query = self.query.order_by(*self.orders[order])
             return order, order
-        self.query = self.query.order_by('-rank')
+        self.query = self.query.order_by('-rank_kludge')
         return '', ''
 
     def _filter_price_from(self, price_from):
