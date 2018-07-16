@@ -7,7 +7,7 @@ def strip_int(s):
             return d
         return ''
 
-    s = s.replace(u' ', u' ')
+    s = s.replace(' ', ' ')
     if s.count(',') == 1 and settings.ACTIVE_LANG == 'ru':
         s = s.replace(',', '.')
     else:
