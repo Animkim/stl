@@ -67,7 +67,10 @@ class TranioApi(object):
                 ad = Ad(**clean_data)
                 ad.save()
                 existing_photos = AdPhoto.objects.filter(photo__in=data['photos']).values_list('pk', flat=True)
-                [AdPhoto.objects.create(id=pk) for pk in data['photos'] if pk not in existing_photos]
+                for pk in data['photos']:
+                    if pk in existing_photos:
+                        continue
+                    AdPhoto.objects.create(pk=pk)
                 ad.photos.set(AdPhoto.objects.filter(id__in=data['photos']))
                 ad.places.set(Place.objects.filter(pk__in=data.get('places', [])))
 
