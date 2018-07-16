@@ -50,8 +50,8 @@ class TranioApi(object):
     def parse_places(self):
         places = self._get_request('get_places')
         for data in places:
-            data = self._clean_data(Place, data)
-            Place.objects.create(**data)
+            clean_data = self._clean_data(Place, data)
+            Place.objects.create(**clean_data)
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
@@ -63,9 +63,13 @@ class TranioApi(object):
                     return
                 clean_data['object_type'] = ObjectType.objects.filter(letter_id=data['object_type']).first()
                 clean_data['place'] = Place.objects.filter(pk=data['place']).first()
+
+                ad = Ad(**data)
+                ad.save()
                 existing_photos = AdPhoto.objects.filter(photo__in=data['photos']).values_list('pk', flat=True)
-                [AdPhoto.objects.create(id=pk) for pk in data['photos'] if pk not in existing_photos]
-                Ad.objects.create(**data)
+                ad.photos.set([AdPhoto.objects.create(id=pk) for pk in data['photos'] if pk not in existing_photos])
+                ad.places.set(Place.objects.filter(pk__in=data.get('places', [])))
+
 
     @staticmethod
     def _clean_data(model, data):
