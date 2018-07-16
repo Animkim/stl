@@ -5,9 +5,11 @@ from django.urls import reverse
 class Ad(models.Model):
     changed_at = models.DateTimeField()
 
-    photos = models.ManyToManyField('main.AdPhoto')
     title = models.TextField(u'Заголовок объявления')
+    desc = models.TextField(u'Содержимое объявления')
     traits = models.TextField(u'Характеристики объявления')
+
+    photos = models.ManyToManyField('main.AdPhoto')
 
     # sorting
     rank = models.IntegerField(db_index=True)
