@@ -2,3 +2,5 @@
 */migrations/
 mydatabase
 static/
+*.pyc
+__pycache__/*
