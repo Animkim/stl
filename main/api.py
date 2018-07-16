@@ -59,9 +59,10 @@ class TranioApi(object):
             ads = self._get_request('get_ads', {'ads': chunk})
             for data in ads:
                 clean_data = self._clean_data(Ad, data)
-                clean_data['object_type'] = ObjectType.objects.filter(letter_id=data['object_type']).first()
                 if not data['object_type']:
                     return
+                clean_data['object_type'] = ObjectType.objects.filter(letter_id=data['object_type']).first()
+                clean_data['place'] = Place.objects.filter(pk=data['place']).first()
                 existing_photos = AdPhoto.objects.filter(photo__in=data['photos']).values_list('pk', flat=True)
                 [AdPhoto.objects.create(id=pk) for pk in data['photos'] if pk not in existing_photos]
                 Ad.objects.create(**data)
