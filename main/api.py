@@ -58,9 +58,8 @@ class TranioApi(object):
         for chunk in zip_longest(*[iter(ads)]*100):
             ads = self._get_request('get_ads', {'ads': chunk})
             for data in ads:
-                object_type = ObjectType.objects.filter(letter_id=data['object_type']).first()
-                data = self._clean_data(Ad, data)
-                data['object_type'] = object_type
+                clean_data = self._clean_data(Ad, data)
+                clean_data['object_type'] = ObjectType.objects.filter(letter_id=data['object_type']).first()
                 if not data['object_type']:
                     return
                 existing_photos = AdPhoto.objects.filter(photo__in=data['photos']).values_list('pk', flat=True)
