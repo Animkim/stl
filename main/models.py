@@ -12,14 +12,14 @@ class Ad(models.Model):
     photos = models.ManyToManyField('main.AdPhoto')
 
     # sorting
-    rank_kludge = models.IntegerField(db_index=True)
+    rank_kludge = models.IntegerField(db_index=True, default=0)
     price = models.BigIntegerField(db_index=True)
     hide_price = models.BooleanField(u'Цена по запросу', default=False, db_index=True)
 
-    place = models.ForeignKey('Place', verbose_name=u'Локация объекта', on_delete=models.PROTECT)
-    places = models.ManyToManyField('Place', verbose_name=u'Входит в локации', related_name='ads')
+    place = models.ForeignKey('Place', verbose_name=u'Локация объекта', on_delete=models.PROTECT, null=True)
+    places = models.ManyToManyField('Place', verbose_name=u'Входит в локации', related_name='ads', null=True)
 
-    object_type = models.ForeignKey('ObjectType', on_delete=models.PROTECT)
+    object_type = models.ForeignKey('ObjectType', on_delete=models.PROTECT, null=True)
     rooms_bed = models.IntegerField(u'Спальни', null=True)
     rooms_bath = models.IntegerField(u'Ванные', null=True)
 
@@ -51,7 +51,7 @@ class AdPhoto(models.Model):
 class ObjectType(models.Model):
     name = models.TextField(u'Топоним в именительном падеже')
     slug = models.TextField()
-    letter_id = models.TextField()
+    char_id = models.TextField()
     parent = models.ForeignKey('self', related_name='children', null=True, on_delete=models.CASCADE)
 
     def __str__(self):

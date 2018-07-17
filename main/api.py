@@ -36,8 +36,8 @@ class TranioApi(object):
     def parse_types(self):
         types = self._get_request('get_types')
         for data in types:
-            data = {k: v for k, v in data.items() if k in ('name', 'slug', 'letter_id')}
-            ObjectType.objects.create(**data)
+            creator = DefaultCreator(ObjectType(), data)
+            creator.process()
 
         for data in types:
             parent, children = data['slug'], data['children']
@@ -50,32 +50,53 @@ class TranioApi(object):
     def parse_places(self):
         places = self._get_request('get_places')
         for data in places:
-            clean_data = self._clean_data(Place, data)
-            Place.objects.create(**clean_data)
+            creator = DefaultCreator(Place(), data)
+            creator.process()
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
         for chunk in zip_longest(*[iter(ads)]*100):
             ads = self._get_request('get_ads', {'ads': chunk})
             for data in ads:
-                clean_data = self._clean_data(Ad, data)
-                if not data['object_type']:
-                    return
-                clean_data['object_type'] = ObjectType.objects.filter(letter_id=data['object_type']).first()
-                clean_data['place'] = Place.objects.filter(pk=data['place']).first()
-
-                ad = Ad(**clean_data)
-                ad.save()
-                existing_photos = AdPhoto.objects.filter(photo__in=data['photos']).values_list('photo', flat=True)
-                for photo in data['photos']:
-                    if photo in existing_photos:
-                        continue
-                    AdPhoto.objects.create(photo=photo)
-                ad.photos.set(AdPhoto.objects.filter(photo__in=data['photos']))
-                ad.places.set(Place.objects.filter(pk__in=data['places']))
+                creator = AdCreator(Ad(), data)
+                creator.process()
 
 
-    @staticmethod
-    def _clean_data(model, data):
-        fields = [field.attname for field in model._meta.fields]
-        return {key: val for key, val in data.items() if key in fields}
+class DefaultCreator(object):
+    def __init__(self, model, data):
+        self.model = model
+        self.data = data
+        self.clean_data = self._clear_data()
+
+    def _clear_data(self):
+        fields = [field.attname for field in self.model._meta.fields]
+        return {key: val for key, val in self.data.items() if key in fields}
+
+    def process(self):
+        self.pre_save()
+        self.model = self.model(**self.clean_data)
+        self.model.save()
+        self.post_save()
+        return self.model
+
+    def pre_save(self):
+        pass
+
+    def post_save(self):
+        pass
+
+
+class AdCreator(DefaultCreator):
+    def pre_save(self):
+        self.clean_data['object_type'] = ObjectType.objects.filter(char_id=self.data.get('object_type')).first()
+        self.clean_data['place'] = Place.objects.filter(pk=self.data.get('place')).first()
+
+    def post_save(self):
+        photos = self.data.get('photos', [])
+        existing_photos = AdPhoto.objects.filter(photo__in=photos).values_list('photo', flat=True)
+        for photo in photos:
+            if photo in existing_photos:
+                continue
+            AdPhoto.objects.create(photo=photo)
+        self.model.photos.set(AdPhoto.objects.filter(photo__in=photos))
+        self.model.set(Place.objects.filter(pk__in=self.data.get('places')))
