@@ -4,7 +4,8 @@ from itertools import zip_longest
 
 from django.conf import settings
 
-from stl.main.models import Ad, AdPhoto, Place, ObjectType
+from stl.main.models import Ad, AdPhoto, Place, ObjectType, StaticPage, MetaData
+from stl.main.creators import DefaultCreator, AdCreator
 
 
 class TranioApi(object):
@@ -20,21 +21,19 @@ class TranioApi(object):
             return request.json()
         return []
 
-    def process(self):
-        self.clear_models()
-        self.parse_types()
-        self.parse_places()
-        self.parse_ads()
-
-    @staticmethod
-    def clear_models():
-        Ad.objects.all().delete()
-        AdPhoto.objects.all().delete()
-        Place.objects.all().delete()
-        ObjectType.objects.all().delete()
+    def process(self, methods, full=False):
+        all_methods = [m for m in dir(self) if m.startswith('parse_')]
+        methods = all_methods if full else methods
+        for method in methods:
+            if not method.startswith('parse_'):
+                method = 'parse_{}'.format(method)
+            getattr(self, method, lambda: None)()
 
     def parse_types(self):
         types = self._get_request('get_types')
+        if types:
+            ObjectType.objects.all().delete()
+
         for data in types:
             creator = DefaultCreator(ObjectType, data)
             creator.process()
@@ -49,54 +48,40 @@ class TranioApi(object):
 
     def parse_places(self):
         places = self._get_request('get_places')
+        if places:
+            Place.objects.all().delete()
+
         for data in places:
             creator = DefaultCreator(Place, data)
             creator.process()
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
+        if ads:
+            Ad.objects.all().delete()
+            AdPhoto.objects.all().delete()
+
         for chunk in zip_longest(*[iter(ads)]*100):
             ads = self._get_request('get_ads', {'ads': chunk})
             for data in ads:
                 creator = AdCreator(Ad, data)
                 creator.process()
+        self._get_request('sync_photos')
 
+    def parse_static_pages(self):
+        pages = self._get_request('get_static_pages')
+        if pages:
+            StaticPage.objects.all().delete()
 
-class DefaultCreator(object):
-    def __init__(self, model, data):
-        self.model = model
-        self.data = data
-        self.clean_data = self._clear_data()
+        for data in pages:
+            creator = DefaultCreator(StaticPage, data)
+            creator.process()
 
-    def _clear_data(self):
-        fields = [field.attname for field in self.model._meta.fields]
-        return {key: val for key, val in self.data.items() if key in fields}
+    def parse_meta_data(self):
+        meta = self._get_request('get_meta_data')
+        if meta:
+            MetaData.objects.all().delete()
 
-    def process(self):
-        self.pre_save()
-        self.model = self.model(**self.clean_data)
-        self.model.save()
-        self.post_save()
-        return self.model
-
-    def pre_save(self):
-        pass
-
-    def post_save(self):
-        pass
-
-
-class AdCreator(DefaultCreator):
-    def pre_save(self):
-        self.clean_data['object_type'] = ObjectType.objects.filter(char_id=self.data.get('object_type')).first()
-        self.clean_data['place'] = Place.objects.filter(pk=self.data.get('place')).first()
-
-    def post_save(self):
-        photos = self.data.get('photos', [])
-        existing_photos = AdPhoto.objects.filter(photo__in=photos).values_list('photo', flat=True)
-        for photo in photos:
-            if photo in existing_photos:
-                continue
-            AdPhoto.objects.create(photo=photo)
-        self.model.photos.set(AdPhoto.objects.filter(photo__in=photos))
-        self.model.places.set(Place.objects.filter(pk__in=self.data.get('places')))
+        for data in meta:
+            creator = DefaultCreator(MetaData, data)
+            creator.process()

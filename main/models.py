@@ -17,7 +17,7 @@ class Ad(models.Model):
     hide_price = models.BooleanField(u'Цена по запросу', default=False, db_index=True)
 
     place = models.ForeignKey('Place', verbose_name=u'Локация объекта', on_delete=models.PROTECT, null=True)
-    places = models.ManyToManyField('Place', verbose_name=u'Входит в локации', related_name='ads', null=True)
+    places = models.ManyToManyField('Place', verbose_name=u'Входит в локации', related_name='ads')
 
     object_type = models.ForeignKey('ObjectType', on_delete=models.PROTECT, null=True)
     rooms_bed = models.IntegerField(u'Спальни', null=True)
@@ -59,10 +59,18 @@ class ObjectType(models.Model):
 
 
 class MetaData(models.Model):
-    path = models.CharField(max_length=800)
-    title = models.TextField()
-    description = models.TextField()
-    keywords = models.TextField()
+    path = models.TextField()
+    title = models.TextField(blank=True)
+    description = models.TextField(blank=True)
+    keywords = models.TextField(blank=True)
 
     def __str__(self):
         return self.path
+
+
+class StaticPage(models.Model):
+    path = models.TextField()
+    content = models.TextField()
+    page_title = models.TextField(u'Заглавие страницы', blank=True)
+    meta_keywords = models.TextField(blank=True)
+    meta_description = models.TextField(blank=True)
