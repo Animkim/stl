@@ -12,6 +12,7 @@ class Command(BaseCommand):
         parser.add_argument('--meta', help='update MetaData model', action='store_true')
         parser.add_argument('--all', help='update all models', action='store_true')
 
-    def handle(self, *args, **options):
-        TranioApi().process(args, full=options.get('all'))
+    def handle(self, **options):
+        methods = [k for k, v in options.items() if v is True]
+        TranioApi().process(methods, full=options.get('all'))
 
