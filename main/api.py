@@ -36,7 +36,7 @@ class TranioApi(object):
     def parse_types(self):
         types = self._get_request('get_types')
         for data in types:
-            creator = DefaultCreator(ObjectType(), data)
+            creator = DefaultCreator(ObjectType, data)
             creator.process()
 
         for data in types:
@@ -50,7 +50,7 @@ class TranioApi(object):
     def parse_places(self):
         places = self._get_request('get_places')
         for data in places:
-            creator = DefaultCreator(Place(), data)
+            creator = DefaultCreator(Place, data)
             creator.process()
 
     def parse_ads(self):
@@ -58,7 +58,7 @@ class TranioApi(object):
         for chunk in zip_longest(*[iter(ads)]*100):
             ads = self._get_request('get_ads', {'ads': chunk})
             for data in ads:
-                creator = AdCreator(Ad(), data)
+                creator = AdCreator(Ad, data)
                 creator.process()
 
 
