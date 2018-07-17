@@ -99,4 +99,4 @@ class AdCreator(DefaultCreator):
                 continue
             AdPhoto.objects.create(photo=photo)
         self.model.photos.set(AdPhoto.objects.filter(photo__in=photos))
-        self.model.set(Place.objects.filter(pk__in=self.data.get('places')))
+        self.model.places.set(Place.objects.filter(pk__in=self.data.get('places')))
