@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 
 class Ad(models.Model):
@@ -26,7 +25,7 @@ class Ad(models.Model):
         return '#{0}'.format(self.pk)
 
     def get_absolute_url(self):
-        return reverse('ad', kwargs={'pk': self.pk})
+        return self.path
 
 
 class Place(models.Model):
@@ -40,7 +39,7 @@ class Place(models.Model):
         return self.path
 
     def get_absolute_url(self):
-        return reverse('place', kwargs={'path': self.path})
+        return self.path
 
 
 class AdPhoto(models.Model):
