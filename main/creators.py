@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from stl.main.models import AdPhoto, Place, ObjectType
 
 
@@ -29,6 +31,7 @@ class AdCreator(DefaultCreator):
     def pre_save(self):
         self.clean_data['object_type'] = ObjectType.objects.filter(char_id=self.data.get('object_type')).first()
         self.clean_data['place'] = Place.objects.filter(pk=self.data.get('place')).first()
+        self.clean_data['changed_at'] = datetime.strptime(self.data.get('created_at', ''), '%Y-%m-%d %H:%M:%S.%f')
 
     def post_save(self):
         photos = self.data.get('photos', [])

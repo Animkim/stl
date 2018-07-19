@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from main.api import TranioApi
+from stl.main.api import TranioApi
 
 
 class Command(BaseCommand):

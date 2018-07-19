@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Ad(models.Model):
+    changed_at = models.DateTimeField()
     title = models.TextField(u'Заголовок объявления')
     desc = models.TextField(u'Содержимое объявления')
     traits = models.TextField(u'Характеристики объявления')

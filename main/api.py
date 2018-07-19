@@ -22,7 +22,7 @@ class TranioApi(object):
         return []
 
     def process(self, methods, full=False):
-        all_methods = [m for m in dir(self) if m.startswith('parse_')]
+        all_methods = [m for m in ('types', 'places', 'ads', 'static_pages', 'meta_data')]
         methods = all_methods if full else methods
         for method in methods:
             if not method.startswith('parse_'):
