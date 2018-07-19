@@ -1,8 +1,9 @@
-#!/usr/bin/env pythonError not found
+#!/usr/bin/env python
 
 import os
 import sys
 import json
+import socket
 
 from argparse import Namespace
 from django.core.management.utils import get_random_secret_key
@@ -25,8 +26,6 @@ def patch_settings():
     original = original.replace('ACTIVE_LANG = \'\'', 'ACTIVE_LANG = \'{0}\''.format(config.lang))
     original = original.replace('TOKEN_API = \'\'', 'TOKEN_API = \'{0}\''.format(config.token))
     original = original.replace('DOMAIN = \'\'', 'DOMAIN = \'{0}\''.format(config.domain))
-    original = original.replace('LOCATION_PATH = \'\'', 'LOCATION_PATH = \'{0}\''.format(config.location_path))
-    original = original.replace('AD_PATH = \'\'', 'AD_PATH = \'{0}\''.format(config.ad_path))
 
     with open(path, 'w') as st_new:
         st_new.write(original)
@@ -44,7 +43,7 @@ def patch_nginx_config():
     with open(path, 'r') as nx_original:
         original = nx_original.read()
 
-    original = original.replace('{host_ip}', config.host_ip)
+    original = original.replace('{host_ip}', socket.gethostbyname(socket.gethostname()))
     original = original.replace('{server_name}', config.domain)
     original = original.replace('{username}', config.username)
 
@@ -80,6 +79,7 @@ if __name__ == '__main__':
         config = config.read()
 
     config = json.loads(config)
+    config.update({'username': config.get('domain', '').replace('.', '')})
     config = Namespace(**config)
 
     patch_settings()

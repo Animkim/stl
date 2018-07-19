@@ -10,13 +10,13 @@ from stl.main.creators import DefaultCreator, AdCreator
 
 class TranioApi(object):
     @staticmethod
-    def _get_request(url, json_data=None):
-        if not url:
+    def _get_request(method, data=None):
+        if not method:
             raise ValueError
 
-        data = {'token': settings.TOKEN_API}
-        data.update(json_data or {})
-        request = requests.post('https://tranio.iru/satellite/api/{0}/'.format(url), json=data, verify=False)
+        data = data or {}
+        data.update({'token': settings.TOKEN_API})
+        request = requests.get('https://tranio.iru/satellite/api/{0}/'.format(method), params=data, verify=False)
         if request.status_code == 200:
             return request.json()
         return []
@@ -38,14 +38,6 @@ class TranioApi(object):
             creator = DefaultCreator(ObjectType, data)
             creator.process()
 
-        for data in types:
-            parent, children = data['slug'], data['children']
-            if not children:
-                continue
-
-            parent = ObjectType.objects.get(slug=parent)
-            ObjectType.objects.filter(slug__in=children).update(parent=parent)
-
     def parse_places(self):
         places = self._get_request('get_places')
         if places:
@@ -62,11 +54,11 @@ class TranioApi(object):
             AdPhoto.objects.all().delete()
 
         for chunk in zip_longest(*[iter(ads)]*100):
-            ads = self._get_request('get_ads', {'ads': chunk})
+            ads = self._get_request('get_ads', {'ads': ', '.join(chunk)})
             for data in ads:
                 creator = AdCreator(Ad, data)
                 creator.process()
-        self._get_request('sync_photos')
+        # self._get_request('sync_photos')
 
     def parse_static_pages(self):
         pages = self._get_request('get_static_pages')
