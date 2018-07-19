@@ -54,7 +54,7 @@ class TranioApi(object):
             AdPhoto.objects.all().delete()
 
         for chunk in zip_longest(*[iter(ads)]*100):
-            ads = self._get_request('get_ads', {'ads': ', '.join(chunk)})
+            ads = self._get_request('get_ads', {'ads': ', '.join(str(pk) for pk in chunk)})
             for data in ads:
                 creator = AdCreator(Ad, data)
                 creator.process()
