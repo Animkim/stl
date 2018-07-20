@@ -15,10 +15,10 @@ class Ad(models.Model):
     price = models.BigIntegerField(db_index=True)
     hide_price = models.BooleanField(u'Цена по запросу', default=False, db_index=True)
 
-    place = models.ForeignKey('Place', verbose_name=u'Локация объекта', on_delete=models.PROTECT, null=True)
+    place = models.ForeignKey('Place', verbose_name=u'Локация объекта', on_delete=models.SET_NULL, null=True)
     places = models.ManyToManyField('Place', verbose_name=u'Входит в локации', related_name='ads')
 
-    object_type = models.ForeignKey('ObjectType', on_delete=models.PROTECT, null=True)
+    object_type = models.ForeignKey('ObjectType', on_delete=models.SET_NULL, null=True)
     rooms_bed = models.IntegerField(u'Спальни', null=True)
     rooms_bath = models.IntegerField(u'Ванные', null=True)
 
@@ -72,3 +72,6 @@ class StaticPage(models.Model):
     page_title = models.TextField(u'Заглавие страницы', blank=True)
     meta_keywords = models.TextField(blank=True)
     meta_description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.path
