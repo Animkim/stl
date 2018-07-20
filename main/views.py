@@ -10,20 +10,20 @@ def robots(request):
     return HttpResponse(RobotsCompiler().compile(request.get_host()), content_type='text/plain')
 
 
-def route(request, path):
+def route(request):
     with open('test.txt', 'w') as fl:
-        fl.write(path)
+        fl.write(request.path)
 
     try:
-        sp = StaticPage.objects.get(path=path)
+        sp = StaticPage.objects.get(path=request.path)
         return render_to_response('static_page.html', {'sp': sp})
     except StaticPage.DoesNotExist:
         pass
 
     try:
-        ad = Ad.objects.get(path=path)
+        ad = Ad.objects.get(path=request.path)
         return render_to_response('ad/ad.html', {'ad': ad}, request)
     except Ad.DoesNotExist:
         pass
 
-    return render_to_response('location.html', {'rp': LocationPage(path, dict(request.GET.items()))}, request)
+    return render_to_response('location.html', {'rp': LocationPage(request.path, dict(request.GET.items()))}, request)
