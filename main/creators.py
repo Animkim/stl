@@ -37,10 +37,10 @@ class AdCreator(DefaultCreator):
 
     def post_save(self):
         photos = self.data.get('photos', [])
-        existing_photos = AdPhoto.objects.filter(photo__in=photos).values_list('photo', flat=True)
-        for photo in photos:
-            if photo in existing_photos:
+        existing_photos = AdPhoto.objects.filter(original_url__in=photos).values_list('original_url', flat=True)
+        for photo_url in photos:
+            if photo_url in existing_photos:
                 continue
-            AdPhoto.objects.create(photo=photo)
-        self.model.photos.set(AdPhoto.objects.filter(photo__in=photos))
+            AdPhoto.objects.create(original_url=photo_url)
+        self.model.photos.set(AdPhoto.objects.filter(photo_url__in=photos))
         self.model.places.set(Place.objects.filter(pk__in=self.data.get('places')))

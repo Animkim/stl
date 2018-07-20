@@ -11,9 +11,6 @@ def robots(request):
 
 
 def route(request):
-    with open('test.txt', 'w') as fl:
-        fl.write(request.path)
-
     try:
         sp = StaticPage.objects.get(path=request.path)
         return render_to_response('static_page.html', {'sp': sp})
@@ -24,6 +21,6 @@ def route(request):
         ad = Ad.objects.get(path=request.path)
         return render_to_response('ad/ad.html', {'ad': ad}, request)
     except Ad.DoesNotExist:
-        pass
-
-    return render_to_response('location.html', {'rp': LocationPage(request.path, dict(request.GET.items()))}, request)
+        params = dict(request.GET.items())
+        params.update({'path': request.path})
+        return render_to_response('location.html', {'lp': LocationPage(params)}, request)

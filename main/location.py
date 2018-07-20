@@ -9,9 +9,9 @@ from stl.main.models import Place, Ad
 
 
 class LocationPage(object):
-    def __init__(self, path, params=None):
-        self.path = path
+    def __init__(self, params):
         self.params = params or {}
+        self.path = self.params.pop('path')
         self.page = self.params.get('page', 1)
         self.adq = AdQuery(self.params)
         self.place = None
@@ -55,8 +55,9 @@ class AdQuery(object):
         'profit': ('-profit', ), 'rank': ('-rank_kludge', ),
     }
 
-    def __init__(self, params=None):
+    def __init__(self, path, params=None):
         self.raw = dict((params or {}).items())
+        self.path = path
         self.query = Ad.objects.all()
         self.params = {}
         self.options = {}
@@ -78,8 +79,8 @@ class AdQuery(object):
 
     def url(self):
         params = self.params.copy()
-        params = sorted(filter(lambda i: bool(i[1]), params.items()))
-        link = u'%s?%s' % ('/search/', urllib.parse.urlencode(params))
+        params = sorted(filter(params.get, params))
+        link = u'%s?%s' % (self.path, urllib.parse.urlencode(params))
         return link
 
     def get_ads(self):

@@ -7,9 +7,14 @@
 {#            <div class="title">{{ ad.title }}</div>#}
 {#        </div>#}
 {#    {% endfor %}#}
-    <div>{{ place.name }}</div>
-    <div>{{ place.slug }}</div>
-    <div>{{ place.path }}</div>
+    <div>{{ lp.place.name }}</div>
+    <div>{{ lp.place.slug }}</div>
+    <div>{{ lp.place.path }}</div>
+
+    <div>{{ lp.get_ads }}</div>
+    <div>{{ lp.get_ads_count }}</div>
+    <div>{{ lp.href }}</div>
+
 
 {#    {% if rp.paginator.has_other_pages %}#}
 {#        {% include "inc-pagination.html" with page=rp.paginator %}#}

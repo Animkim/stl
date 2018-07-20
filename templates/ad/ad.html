@@ -1,19 +1,24 @@
 {% extends "misc_page.html" %}
-{% block title %}{{ sp.title }}{% endblock %}
+{% block title %}{{ ad.title }}{% endblock %}
 {% block content %}
-    <div>{{ sp.path }}</div>
-    <div>{{ sp.title }}</div>
-    <div>{{ sp.desc }}</div>
-    <div>{{ sp.traits }}</div>
-    <div>{{ sp.photos.all }}</div>
-    <div>{{ sp.price }}</div>
-    <div>{{ sp.hide_price }}</div>
-    <div>{{ sp.place }}</div>
-    <div>{{ sp.places }}</div>
-    <div>{{ sp.rooms_bed }}</div>
-    <div>{{ sp.rooms_bath }}</div>
+    <div>{{ ad.path }}</div>
+    <div>{{ ad.title }}</div>
+    <div>{{ ad.desc }}</div>
+    <div>{{ ad.traits }}</div>
     <div>
-        {{ sp.object_type.name }}
-        {{ sp.object_type.slug }}
+        {{ ad.photos.all }}
+        {% for photo in ad.photos.all %}
+            {{ photo.get_absolute_url }}
+        {% endfor %}
+    </div>
+    <div>{{ ad.price }}</div>
+    <div>{{ ad.hide_price }}</div>
+    <div>{{ ad.place }}</div>
+    <div>{{ ad.places }}</div>
+    <div>{{ ad.rooms_bed }}</div>
+    <div>{{ ad.rooms_bath }}</div>
+    <div>
+        {{ ad.object_type.name }}
+        {{ ad.object_type.slug }}
     </div>
 {% endblock %}

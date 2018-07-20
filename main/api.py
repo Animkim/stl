@@ -22,8 +22,8 @@ class TranioApi(object):
         return []
 
     def process(self, methods, full=False):
-        all_methods = [m for m in ('types', 'places', 'ads', 'static_pages', 'meta_data')]
-        methods = all_methods if full else methods
+        if full:
+            methods = ('types', 'places', 'ads', 'static_pages', 'meta_data')
         for method in methods:
             if not method.startswith('parse_'):
                 method = 'parse_{}'.format(method)
@@ -77,3 +77,6 @@ class TranioApi(object):
         for data in meta:
             creator = DefaultCreator(MetaData, data)
             creator.process()
+
+    def sync_photos(self):
+        pass
