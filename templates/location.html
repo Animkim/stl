@@ -1,14 +1,17 @@
 {% extends "misc_page.html" %}
 {% block content %}
-    <p>{{ rp.get_ads_count }}</p>
-    {% for ad in rp.paginator %}
-        <div class="snip">
-            <div style="float: left; padding-right: 11px">{{ ad.pk }}</div>
-            <div class="title">{{ ad.title }}</div>
-        </div>
-    {% endfor %}
+{#    <p>{{ rp.get_ads_count }}</p>#}
+{#    {% for ad in rp.paginator %}#}
+{#        <div class="snip">#}
+{#            <div style="float: left; padding-right: 11px">{{ ad.pk }}</div>#}
+{#            <div class="title">{{ ad.title }}</div>#}
+{#        </div>#}
+{#    {% endfor %}#}
+    <div>{{ place.name }}</div>
+    <div>{{ place.slug }}</div>
+    <div>{{ place.path }}</div>
 
-    {% if rp.paginator.has_other_pages %}
-        {% include "inc-pagination.html" with page=rp.paginator %}
-    {% endif %}
+{#    {% if rp.paginator.has_other_pages %}#}
+{#        {% include "inc-pagination.html" with page=rp.paginator %}#}
+{#    {% endif %}#}
 {% endblock %}

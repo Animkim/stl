@@ -13,6 +13,10 @@ class Command(BaseCommand):
         parser.add_argument('--all', help='update all models', action='store_true')
 
     def handle(self, **options):
-        methods = [k for k, v in options.items() if v is True]
+        methods = filter(options.get, options)
+        if set(methods) & {'places', 'types'}:
+            order_list = ('places', 'types', 'ads')
+            methods += ['ads']
+            methods = sorted(set(methods), key=lambda m: m in order_list and order_list.index(m) or -1)
         TranioApi().process(methods, full=options.get('all'))
 

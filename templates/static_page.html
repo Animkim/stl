@@ -1,0 +1,13 @@
+{% extends "misc_page.html" %}
+ {% block meta %}
+     {% if sp.meta_description %}<meta name="description" content="{{ sp.meta_description }}">{% endif %}
+     {% if sp.meta_keywords %}<meta name="keywords" content="{{ sp.meta_keywords }}">{% endif %}
+     <meta property="og:title" content="{{ sp.page_title }}"/>
+     {% if sp.meta_description %}<meta property="og:description" content="{{ sp.meta_description }}"/>{% endif %}
+     <meta property="og:type" content="website"/>
+ {% endblock %}
+{% block title %}{{ sp.page_title }}{% endblock %}
+{% block content %}
+    <div>{{ sp.path }}</div>
+    <div>{{ sp.content }}</div>
+{% endblock %}

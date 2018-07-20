@@ -9,10 +9,11 @@ from stl.main.models import Place, Ad
 
 
 class LocationPage(object):
-    def __init__(self, path, page=None, params=None):
+    def __init__(self, path, params=None):
         self.path = path
-        self.page = page or 1
-        self.adq = AdQuery(params)
+        self.params = params or {}
+        self.page = self.params.get('page', 1)
+        self.adq = AdQuery(self.params)
         self.place = None
 
         self._check_path()

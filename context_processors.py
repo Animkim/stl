@@ -3,5 +3,6 @@ from django.conf import settings
 
 def context(request):
     return {
-        'LANG': settings.ACTIVE_LANG
+        'LANG': settings.ACTIVE_LANG,
+        'DOMAIN': settings.DOMAIN,
     }
