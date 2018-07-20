@@ -50,6 +50,7 @@ class AdPhoto(models.Model):
 class ObjectType(models.Model):
     name = models.TextField(u'Топоним в именительном падеже')
     slug = models.TextField()
+    char_id = models.TextField()
 
     def __str__(self):
         return self.slug
