@@ -10,8 +10,10 @@ def robots(request):
     return HttpResponse(RobotsCompiler().compile(request.get_host()), content_type='text/plain')
 
 
-def route(request, path):
-    path = '/{0}/'.format(path.strip('/'))
+def route(request, path='/'):
+    if not path.startswith('/'):
+        path = '/{0}/'.format(path.strip('/'))
+
     try:
         sp = StaticPage.objects.get(path=path)
         return render_to_response('static_page.html', {'sp': sp})
