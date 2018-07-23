@@ -37,7 +37,7 @@ class Place(models.Model):
     path = models.TextField(u'Активный url')
 
     def __str__(self):
-        return self.path
+        return '#{0} - {1}'.format(self.pk, self.slug)
 
     def get_absolute_url(self):
         return self.path

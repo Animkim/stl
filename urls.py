@@ -4,5 +4,6 @@ from stl.main import views
 
 urlpatterns = [
     path('robots.txt/', views.robots),
-    path('<path:url>', views.route),
+    path('', views.route),
+    path('<path:path>', views.route),
 ]
