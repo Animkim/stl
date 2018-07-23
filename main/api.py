@@ -1,3 +1,4 @@
+import os
 import requests
 
 from itertools import zip_longest
@@ -58,7 +59,7 @@ class TranioApi(object):
             for data in ads:
                 creator = AdCreator(Ad, data)
                 creator.process()
-        # self._get_request('sync_photos')
+        self.sync_photos()
 
     def parse_static_pages(self):
         pages = self._get_request('get_static_pages')
@@ -79,4 +80,18 @@ class TranioApi(object):
             creator.process()
 
     def sync_photos(self):
-        pass
+        for ph in AdPhoto.objects.all():
+            path = '{static}{photo}'.format(static=settings.STATIC_ROOT, photo=str(ph.photo))
+            if os.path.isfile(path):
+                continue
+
+            if not os.path.exists(os.path.dirname(path)):
+                os.makedirs(os.path.dirname(path))
+
+            try:
+                content = requests.get(ph.download_link).content
+            except requests.exceptions.RequestException:
+                continue
+
+            with open(path, 'wb') as photo:
+                photo.write(content)

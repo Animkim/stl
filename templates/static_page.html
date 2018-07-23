@@ -6,8 +6,8 @@
      {% if sp.meta_description %}<meta property="og:description" content="{{ sp.meta_description }}"/>{% endif %}
      <meta property="og:type" content="website"/>
  {% endblock %}
-{% block title %}{{ sp.page_title }}{% endblock %}
+{% block title %}{{ sp.page_title|safe }}{% endblock %}
 {% block content %}
     <div>{{ sp.path }}</div>
-    <div>{{ sp.content }}</div>
+    <div>{{ sp.content|safe }}</div>
 {% endblock %}

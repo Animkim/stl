@@ -36,7 +36,7 @@ class LocationPage(object):
 
     def href(self):
         if not self.place:
-            return self.adq.url()
+            return self.adq.href()
         return self.place.path
 
     def paginator(self):
@@ -77,7 +77,7 @@ class AdQuery(object):
             if isinstance(result, tuple) and len(result) == 2:
                 self.params[key], self.options[key] = result
 
-    def url(self):
+    def href(self):
         params = self.params.copy()
         params = sorted(filter(params.get, params))
         link = u'%s?%s' % (self.path, urllib.parse.urlencode(params))

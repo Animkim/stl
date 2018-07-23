@@ -2,9 +2,9 @@
 {% block title %}{{ ad.title }}{% endblock %}
 {% block content %}
     <div>{{ ad.path }}</div>
-    <div>{{ ad.title }}</div>
-    <div>{{ ad.desc }}</div>
-    <div>{{ ad.traits }}</div>
+    <div>{{ ad.title|safe }}</div>
+    <div>{{ ad.desc|safe }}</div>
+    <div>{{ ad.traits|safe }}</div>
     <div>
         {{ ad.photos.all }}
         {% for photo in ad.photos.all %}
