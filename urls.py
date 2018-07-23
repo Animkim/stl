@@ -1,9 +1,8 @@
-from django.urls import path, re_path
+from django.urls import path
 
 from stl.main import views
 
 urlpatterns = [
     path('robots.txt/', views.robots),
-    path('', views.route),
-    re_path('/$', views.route),
+    path('<path:url>', views.route),
 ]

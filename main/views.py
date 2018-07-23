@@ -10,7 +10,10 @@ def robots(request):
     return HttpResponse(RobotsCompiler().compile(request.get_host()), content_type='text/plain')
 
 
-def route(request):
+def route(request, path):
+    with open('test.txt', 'w') as fl:
+        fl.write(path)
+
     try:
         sp = StaticPage.objects.get(path=request.path)
         return render_to_response('static_page.html', {'sp': sp})
