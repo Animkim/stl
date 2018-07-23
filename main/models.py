@@ -45,7 +45,7 @@ class Place(models.Model):
 
 class AdPhoto(models.Model):
     photo = models.FileField(upload_to='adt/')
-    original_url = models.TextField()
+    download_link = models.TextField()
 
     def get_absolute_url(self):
         return self.photo.url
