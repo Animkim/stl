@@ -18,10 +18,12 @@ class DownloadThread(Thread):
 
     def run(self):
         while True:
-            with self.lock:
-                if not self.downloads:
-                    break
-                link, path = self.downloads.pop()
+            self.lock.acquire()
+            if not self.downloads:
+                self.lock.release()
+                break
+            link, path = self.downloads.pop()
+            self.lock.release()
 
             content = self.download(link)
             if content:
