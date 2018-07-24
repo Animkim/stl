@@ -77,7 +77,7 @@ class AdQuery(object):
 
     def href(self):
         params = self.params.copy()
-        params = sorted(filter(params.get, params))
+        params = sorted(filter(lambda i: bool(i[1]), params.items()))
         link = u'%s?%s' % (self.path, urllib.parse.urlencode(params))
         return link
 
