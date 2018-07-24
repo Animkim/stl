@@ -1,6 +1,7 @@
 import urllib.parse
 
 from django.http import Http404
+from django.db.models import Count
 from django.utils.text import slugify
 from django.core.paginator import Paginator, EmptyPage
 
@@ -9,22 +10,21 @@ from stl.main.models import Place, Ad
 
 
 class LocationPage(object):
+    LOCATION_SINGLE_PAGE = Place.objects.values('path').annotate(path_count=Count("path")).count() == 1
+
     def __init__(self, params):
         self.params = params or {}
         self.path = self.params.pop('path')
-        self.page = self.params.get('page', 1)
-        self.adq = AdQuery(self.params)
-        self.place = None
+        self.adq = AdQuery(self.path, self.params)
+        self.place = self._get_place()
 
-        self._check_path()
-
-    def _check_path(self):
-        if not self.path:
-            return
-        try:
-            self.place = Place.objects.get(path=self.path)
-        except Place.DoesNotExist:
+    def _get_place(self):
+        place = Place.objects.filter(path=self.path).first()
+        if not place:
             raise Http404
+        if not self.LOCATION_SINGLE_PAGE:
+            return place
+        return None
 
     def get_ads(self):
         if not self.place:
@@ -42,7 +42,7 @@ class LocationPage(object):
     def paginator(self):
         paginator = Paginator(self.get_ads(), 10)
         try:
-            ads = paginator.page(parse_int(self.page))
+            ads = paginator.page(parse_int(self.params.get('page', 1)))
         except (EmptyPage, ValueError):
             raise Http404
         return ads
