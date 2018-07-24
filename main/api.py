@@ -116,6 +116,6 @@ class TranioApi(object):
             downloads.append((source, path))
 
         lock = RLock()
-        workers = [DownloadThread(downloads, lock, n).start() for n in range(10)]
+        workers = [DownloadThread(downloads, lock, n).start() for n in range(5)]
         while workers:
             workers = filter(lambda w: w.join(1), workers)
