@@ -10,8 +10,6 @@ from stl.main.models import Place, Ad
 
 
 class LocationPage(object):
-    LOCATION_SINGLE_PAGE = Place.objects.values('path').annotate(path_count=Count("path")).count() == 1
-
     def __init__(self, params):
         self.params = params or {}
         self.path = self.params.pop('path')
@@ -22,7 +20,7 @@ class LocationPage(object):
         place = Place.objects.filter(path=self.path).first()
         if not place:
             raise Http404
-        if not self.LOCATION_SINGLE_PAGE:
+        if not Place.objects.values('path').annotate(path_count=Count("path")).count() == 1:
             return place
         return None
 
