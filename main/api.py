@@ -2,11 +2,37 @@ import os
 import requests
 
 from itertools import zip_longest
+from threading import Thread, RLock
 
 from django.conf import settings
 
 from stl.main.models import Ad, AdPhoto, Place, ObjectType, StaticPage, MetaData
 from stl.main.creators import DefaultCreator, AdCreator
+
+
+class DownloadThread(Thread):
+    def __init__(self, downloads, lock, number):
+        self.lock = lock
+        self.downloads = downloads
+        super(DownloadThread, self).__init__(name='DownloadThread-%s' % number)
+
+    def run(self):
+        while True:
+            with self.lock:
+                if not self.downloads:
+                    break
+                link, path = self.downloads.pop()
+
+            content = self.download(link)
+            if content:
+                with open(path, 'wb') as photo:
+                    photo.write(content)
+
+    def download(self, link):
+        try:
+            return requests.get(link).content
+        except requests.exceptions.RequestException:
+            return None
 
 
 class TranioApi(object):
@@ -80,18 +106,16 @@ class TranioApi(object):
             creator.process()
 
     def sync_photos(self):
-        for ph in AdPhoto.objects.all():
-            path = '{static}{photo}'.format(static=settings.STATIC_ROOT, photo=str(ph.photo))
+        downloads = []
+        for source, photo in AdPhoto.objects.values_list('download_link', 'photo'):
+            path = '{static}{photo}'.format(static=settings.STATIC_ROOT, photo=photo)
             if os.path.isfile(path):
                 continue
-
             if not os.path.exists(os.path.dirname(path)):
                 os.makedirs(os.path.dirname(path))
+            downloads.append((source, path))
 
-            try:
-                content = requests.get(ph.download_link).content
-            except requests.exceptions.RequestException:
-                continue
-
-            with open(path, 'wb') as photo:
-                photo.write(content)
+        lock = RLock()
+        workers = [DownloadThread(downloads, lock, n).start() for n in range(10)]
+        while workers:
+            workers = filter(lambda w: w.join(1), workers)
