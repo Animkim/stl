@@ -1,7 +1,8 @@
 import urllib.parse
 
 from django.http import Http404
-from django.db.models import Count
+from django.db.models import Count, Value
+from django.db.models.functions import Coalesce
 from django.utils.text import slugify
 from django.core.paginator import Paginator, EmptyPage
 
@@ -86,6 +87,10 @@ class AdQuery(object):
 
     def _filter_order(self, order):
         if order in self.orders:
+            if order in ['price', '-price']:
+                self.query = self.query.filter(hide_price=False)
+            if order == 'profit':
+                self.query = self.query.annotate(profit=Coalesce('profitability', Value(0)))
             self.query = self.query.order_by(*self.orders[order])
             return order, order
         self.query = self.query.order_by('-rank_kludge')

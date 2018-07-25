@@ -12,6 +12,7 @@ class Ad(models.Model):
 
     # sorting
     rank_kludge = models.IntegerField(db_index=True, default=0)
+    profitability = models.DecimalField(u'Доходность', max_digits=5, decimal_places=2, null=True)
     price = models.BigIntegerField(db_index=True)
     hide_price = models.BooleanField(u'Цена по запросу', default=False, db_index=True)
 
@@ -27,6 +28,9 @@ class Ad(models.Model):
 
     def get_absolute_url(self):
         return self.path
+
+    class Meta:
+        ordering = ['rank_kludge']
 
 
 class Place(models.Model):
@@ -79,3 +83,17 @@ class StaticPage(models.Model):
 
     def __str__(self):
         return self.path
+
+
+class SiteData(models.Model):
+    token = models.TextField()
+    robots = models.TextField()
+    domain = models.TextField()
+    location_single_path = models.TextField(blank=True)
+    location_page_size = models.PositiveIntegerField()
+    favicon = models.FileField()
+    lang = models.CharField(max_length=2)
+
+    @property
+    def username(self):
+        return self.domain.replace('.', '')

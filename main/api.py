@@ -6,8 +6,9 @@ from threading import Thread, RLock
 
 from django.conf import settings
 
-from stl.main.models import Ad, AdPhoto, Place, ObjectType, StaticPage, MetaData
+from stl.main.models import Ad, AdPhoto, Place, ObjectType, StaticPage, MetaData, SiteData
 from stl.main.creators import DefaultCreator, AdCreator
+from stl.main.management.commands.make_sitemap import make_sitemap
 
 
 class DownloadThread(Thread):
@@ -50,13 +51,14 @@ class TranioApi(object):
             return request.json()
         return []
 
-    def process(self, methods, full=False):
-        if full:
-            methods = ('types', 'places', 'ads', 'static_pages', 'meta_data')
+    def process(self, methods):
+        if 'all' in methods:
+            methods = ('site_data', 'types', 'places', 'ads', 'static_pages', 'meta_data')
         for method in methods:
             if not method.startswith('parse_'):
                 method = 'parse_{}'.format(method)
             getattr(self, method, lambda: None)()
+        make_sitemap()
 
     def parse_types(self):
         types = self._get_request('get_types')
@@ -105,6 +107,15 @@ class TranioApi(object):
 
         for data in meta:
             creator = DefaultCreator(MetaData, data)
+            creator.process()
+
+    def parse_site_data(self):
+        site_data = self._get_request('get_site_data')
+        if site_data:
+            SiteData.objects.all().delete()
+
+        for data in site_data:
+            creator = DefaultCreator(SiteData, data)
             creator.process()
 
     def sync_photos(self):
