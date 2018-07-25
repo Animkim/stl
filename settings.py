@@ -10,9 +10,6 @@ ALLOWED_HOSTS = ['*']
 
 SECRET_KEY = ''
 TOKEN_API = ''
-DOMAIN = ''
-LOCATION_PATH = ''
-AD_PATH = ''
 SITE_ID = 1
 
 MIDDLEWARE = [

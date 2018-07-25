@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import socket
 
@@ -6,6 +7,21 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from stl.main.models import SiteData
+
+
+def patch_settings(config):
+    path = os.path.join(settings.BASE_DIR, 'settings.py')
+    if not os.path.exists(path):
+        sys.stdout.write('Error not found file settings.py check its availability: {0}}'.format(path))
+        return sys.exit(1)
+
+    with open(path, 'r') as settings_old:
+        original = settings_old.read()
+
+    original = re.sub(r'ALLOWED_HOSTS = \[.+\]', 'ALLOWED_HOSTS = [\'{0}\']'.format(config.domain), original)
+    original = re.sub(r'ACTIVE_LANG = \[.+\]', 'ACTIVE_LANG = [\'{0}\']'.format(config.domain), original)
+    with open(path, 'w') as settings_new:
+        settings_new.write(original)
 
 
 def patch_nginx_config(config):
@@ -53,4 +69,5 @@ class Command(BaseCommand):
         data = SiteData.objects.last()
         patch_nginx_config(data)
         patch_uwsgi_config(data)
+        patch_settings(data)
 
