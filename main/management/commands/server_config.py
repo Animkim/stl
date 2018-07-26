@@ -19,7 +19,8 @@ def patch_settings(config):
         original = settings_old.read()
 
     original = re.sub(r'ALLOWED_HOSTS = \[.+\]', 'ALLOWED_HOSTS = [\'{0}\']'.format(config.domain), original)
-    original = re.sub(r'ACTIVE_LANG = \[.+\]', 'ACTIVE_LANG = [\'{0}\']'.format(config.domain), original)
+    original = re.sub(r'ACTIVE_LANG = \[.+\]', 'ACTIVE_LANG = [\'{0}\']'.format(config.lang), original)
+    original = re.sub(r'DOMAIN = \[.+\]', 'ACTIVE_LANG = [\'{0}\']'.format(config.domain), original)
     with open(path, 'w') as settings_new:
         settings_new.write(original)
 

@@ -11,6 +11,7 @@ ALLOWED_HOSTS = ['*']
 SECRET_KEY = ''
 TOKEN_API = ''
 URL_API = ''
+DOMAIN = ''
 SITE_ID = 1
 
 MIDDLEWARE = [
