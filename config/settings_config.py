@@ -17,8 +17,8 @@ def patch_settings():
         sys.stdout.write('Error not found file token check its availability: {0}'.format(config_path))
         sys.exit(1)
 
-    with open(config_path, 'r') as config:
-        config = json.load(config.read())
+    with open(config_path, 'r') as conf:
+        config = json.load(conf.read())
     with open(settings_path, 'r') as settings:
         original = settings.read()
 
