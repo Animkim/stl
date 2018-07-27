@@ -1,3 +1,4 @@
+aiohttp
 django
 django-compressor
 requests
