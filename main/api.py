@@ -1,4 +1,5 @@
 import os
+import sys
 import requests
 
 from itertools import zip_longest
@@ -39,6 +40,9 @@ class DownloadThread(Thread):
 
 
 class TranioApi(object):
+    def __init__(self):
+        self.stdout = sys.stdout
+
     @staticmethod
     def _get_request(method, data=None):
         if not method:
@@ -57,8 +61,15 @@ class TranioApi(object):
         for method in methods:
             if not method.startswith('parse_'):
                 method = 'parse_{}'.format(method)
+
+            self.stdout.write('Start {}'.format(method))
             getattr(self, method, lambda: None)()
+            self.stdout.write('End {}'.format(method))
+
+        self.stdout.write('Start make sitemap')
         make_sitemap()
+        self.stdout.write('Sitemap ready')
+        sys.exit(0)
 
     def parse_types(self):
         types = self._get_request('get_types')
@@ -119,6 +130,7 @@ class TranioApi(object):
             creator.process()
 
     def sync_photos(self):
+        self.stdout.write('Start sync photos')
         downloads = []
         for source, photo in AdPhoto.objects.values_list('download_link', 'photo'):
             path = '{static}{photo}'.format(static=settings.STATIC_ROOT, photo=photo)
@@ -131,4 +143,5 @@ class TranioApi(object):
         lock = RLock()
         for n in range(5):
             DownloadThread(downloads, lock, n).start()
+        self.stdout.write('Photos all: {0} \n Photos downloaded {1}'.format(AdPhoto.objects.count(), len(downloads)))
 
