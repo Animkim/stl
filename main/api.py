@@ -6,6 +6,7 @@ from itertools import zip_longest
 from threading import Thread, RLock
 
 from django.conf import settings
+from django.core.management.base import OutputWrapper
 
 from stl.main.models import Ad, AdPhoto, Place, ObjectType, StaticPage, MetaData, SiteData
 from stl.main.creators import DefaultCreator, AdCreator
@@ -41,7 +42,7 @@ class DownloadThread(Thread):
 
 class TranioApi(object):
     def __init__(self):
-        self.stdout = sys.stdout
+        self.stdout = OutputWrapper(sys.stdout)
 
     @staticmethod
     def _get_request(method, data=None):
@@ -63,31 +64,16 @@ class TranioApi(object):
                 method = 'parse_{}'.format(method)
 
             self.stdout.write('Start {}'.format(method))
-            getattr(self, method, lambda: None)()
-            self.stdout.write('End {}'.format(method))
+            parse_count = getattr(self, method, lambda: None)()
+            self.stdout.write('End {0} object parse {1}'.format(method, parse_count))
 
-        self.stdout.write('Start make sitemap')
-        make_sitemap()
-        self.stdout.write('Sitemap ready')
         sys.exit(0)
 
     def parse_types(self):
-        types = self._get_request('get_types')
-        if types:
-            ObjectType.objects.all().delete()
-
-        for data in types:
-            creator = DefaultCreator(ObjectType, data)
-            creator.process()
+        pass
 
     def parse_places(self):
-        places = self._get_request('get_places')
-        if places:
-            Place.objects.all().delete()
-
-        for data in places:
-            creator = DefaultCreator(Place, data)
-            creator.process()
+        pass
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
@@ -101,6 +87,7 @@ class TranioApi(object):
                 creator = AdCreator(Ad, data)
                 creator.process()
         self.sync_photos()
+        return Ad.objects.count()
 
     def parse_static_pages(self):
         pages = self._get_request('get_static_pages')
@@ -110,6 +97,7 @@ class TranioApi(object):
         for data in pages:
             creator = DefaultCreator(StaticPage, data)
             creator.process()
+        return StaticPage.objects.count()
 
     def parse_meta_data(self):
         meta = self._get_request('get_meta_data')
@@ -119,6 +107,7 @@ class TranioApi(object):
         for data in meta:
             creator = DefaultCreator(MetaData, data)
             creator.process()
+        return MetaData.objects.count()
 
     def parse_site_data(self):
         site_data = self._get_request('get_site_data')
@@ -128,6 +117,7 @@ class TranioApi(object):
         for data in site_data:
             creator = DefaultCreator(SiteData, data)
             creator.process()
+        return SiteData.objects.count()
 
     def sync_photos(self):
         self.stdout.write('Start sync photos')
