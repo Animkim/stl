@@ -67,13 +67,28 @@ class TranioApi(object):
             parse_count = getattr(self, method, lambda: None)()
             self.stdout.write('End {0} object parse {1}'.format(method, parse_count))
 
+        self.stdout.write('Start make sitemap')
+        make_sitemap()
+        self.stdout.write('Sitemap ready')
         sys.exit(0)
 
     def parse_types(self):
-        pass
+        types = self._get_request('get_types')
+        if types:
+            ObjectType.objects.all().delete()
+
+        for data in types:
+            creator = DefaultCreator(ObjectType, data)
+            creator.process()
 
     def parse_places(self):
-        pass
+        places = self._get_request('get_places')
+        if places:
+            Place.objects.all().delete()
+
+        for data in places:
+            creator = DefaultCreator(Place, data)
+            creator.process()
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
