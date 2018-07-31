@@ -1,6 +1,5 @@
 aiohttp
 django
-django-compressor
 requests
 pillow
 lxml
