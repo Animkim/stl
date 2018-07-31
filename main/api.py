@@ -63,13 +63,13 @@ class TranioApi(object):
             if not method.startswith('parse_'):
                 method = 'parse_{}'.format(method)
 
-            self.stdout.write('Start {}'.format(method))
+            self.stdout.write('  Start {}...'.format(method), ending='')
             parse_count = getattr(self, method, lambda: None)()
-            self.stdout.write('End {0} object parse {1}'.format(method, parse_count))
+            self.stdout.write('objects count {}'.format(parse_count))
 
-        self.stdout.write('Start make sitemap')
+        self.stdout.write('  Start make sitemap...', ending='')
         make_sitemap()
-        self.stdout.write('Sitemap ready')
+        self.stdout.write('OK')
         sys.exit(0)
 
     def parse_types(self):
@@ -80,6 +80,7 @@ class TranioApi(object):
         for data in types:
             creator = DefaultCreator(ObjectType, data)
             creator.process()
+        return ObjectType.objects.count()
 
     def parse_places(self):
         places = self._get_request('get_places')
@@ -89,6 +90,7 @@ class TranioApi(object):
         for data in places:
             creator = DefaultCreator(Place, data)
             creator.process()
+        return Place.objects.count()
 
     def parse_ads(self):
         ads = self._get_request('get_ads')
@@ -135,7 +137,7 @@ class TranioApi(object):
         return SiteData.objects.count()
 
     def sync_photos(self):
-        self.stdout.write('Start sync photos')
+        self.stdout.write('  Start sync photos')
         downloads = []
         for source, photo in AdPhoto.objects.values_list('download_link', 'photo'):
             path = '{static}{photo}'.format(static=settings.STATIC_ROOT, photo=photo)
@@ -148,5 +150,5 @@ class TranioApi(object):
         lock = RLock()
         for n in range(5):
             DownloadThread(downloads, lock, n).start()
-        self.stdout.write('Photos all: {0} \n Photos downloaded {1}'.format(AdPhoto.objects.count(), len(downloads)))
+        self.stdout.write(' Photos all: {0} \n Photos downloaded: {1}'.format(AdPhoto.objects.count(), len(downloads)))
 
