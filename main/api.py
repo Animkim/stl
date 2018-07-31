@@ -65,7 +65,7 @@ class TranioApi(object):
 
             self.stdout.write('  Start {}...'.format(method), ending='')
             parse_count = getattr(self, method, lambda: None)()
-            self.stdout.write('objects count {}'.format(parse_count))
+            self.stdout.write('{}'.format(parse_count))
 
         self.stdout.write('  Start make sitemap...', ending='')
         make_sitemap()
@@ -137,7 +137,6 @@ class TranioApi(object):
         return SiteData.objects.count()
 
     def sync_photos(self):
-        self.stdout.write('  Start sync photos')
         downloads = []
         for source, photo in AdPhoto.objects.values_list('download_link', 'photo'):
             path = '{static}{photo}'.format(static=settings.STATIC_ROOT, photo=photo)
@@ -150,5 +149,3 @@ class TranioApi(object):
         lock = RLock()
         for n in range(5):
             DownloadThread(downloads, lock, n).start()
-        self.stdout.write(' Photos all: {0} \n Photos downloaded: {1}'.format(AdPhoto.objects.count(), len(downloads)))
-
